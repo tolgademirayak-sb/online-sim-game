@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { StageState, ROLE_LABELS } from '@/types/game';
+import { calculateRecommendedOrder } from '@/lib/gameLogic';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,8 +16,7 @@ interface OrderInputProps {
 
 export function OrderInput({ stage, onSubmitOrder, disabled, shipmentDelay = 2, orderDelay = 2 }: OrderInputProps) {
   const [orderQuantity, setOrderQuantity] = useState(4);
-  
-  const suggestedOrder = Math.max(0, 12 - stage.inventory + stage.backlog + stage.incomingOrders);
+  const suggestedOrder = calculateRecommendedOrder(stage);
 
   const handleSubmit = () => {
     onSubmitOrder(Math.max(0, orderQuantity));

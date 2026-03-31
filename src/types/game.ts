@@ -61,6 +61,15 @@ export interface GameConfig {
   backlogCostPerUnit: number;
   orderDelay: number;
   shipmentDelay: number;
+  timerConfig: TimerConfig;
+}
+
+export interface TimerConfig {
+  earlyRounds: number;
+  finalRounds: number;
+  earlyRoundDurationSec: number;
+  middleRoundDurationSec: number;
+  finalRoundDurationSec: number;
 }
 
 export const ROLE_LABELS: Record<Role, string> = {
@@ -88,7 +97,7 @@ export const DEFAULT_DEMAND_CONFIG: DemandConfig = {
 };
 
 export const DEFAULT_CONFIG: GameConfig = {
-  totalWeeks: 50,
+  totalWeeks: 35,
   playerRole: 'retailer',
   demandPattern: 'constant',
   demandConfig: DEFAULT_DEMAND_CONFIG,
@@ -97,4 +106,11 @@ export const DEFAULT_CONFIG: GameConfig = {
   backlogCostPerUnit: 1.0,
   orderDelay: 2,
   shipmentDelay: 2,
+  timerConfig: {
+    earlyRounds: 3,
+    finalRounds: 5,
+    earlyRoundDurationSec: 180,
+    middleRoundDurationSec: 120,
+    finalRoundDurationSec: 60,
+  },
 };

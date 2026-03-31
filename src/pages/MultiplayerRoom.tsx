@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { Role, ROLE_LABELS, GameState } from '@/types/game';
-import { peerService, MultiplayerPlayer, RoomState } from '@/lib/peerService';
+import { Role, ROLE_LABELS, GameState, TimerConfig } from '@/types/game';
+import { peerService, RoomState } from '@/lib/peerService';
 import { Button } from '@/components/ui/button';
-import { RoleSelector } from '@/components/game/RoleSelector';
 import { GameSummary } from '@/components/game/GameSummary';
+import { GameCharts } from '@/components/game/GameCharts';
+import { CostSummary } from '@/components/game/CostSummary';
 import { cn } from '@/lib/utils';
 import { Copy, Check, Crown, Loader2, Users, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
@@ -23,6 +24,29 @@ export default function MultiplayerRoom() {
   const [waitingForOthers, setWaitingForOthers] = useState(false);
   const [copied, setCopied] = useState(false);
   const [hostDisconnected, setHostDisconnected] = useState(false);
+  const [nowMs, setNowMs] = useState(() => Date.now());
+  const [costReviews, setCostReviews] = useState<Record<number, {
+    week: number;
+    enteredCost: number;
+    trueCost: number;
+    isCorrect: boolean;
+  }>>({});
+
+  const getIsCurrentPlayer = (player: RoomState['players'][number]) => (
+    isHost ? player.isHost : !player.isHost && player.name === playerName
+  );
+
+  const getDisplayName = (player: RoomState['players'][number], index: number) => {
+    if (!roomState?.anonymousMode || isHost) {
+      return player.name;
+    }
+
+    if (getIsCurrentPlayer(player)) {
+      return 'You';
+    }
+
+    return `Player ${index + 1}`;
+  };
 
   useEffect(() => {
     if (!roomId || !playerName) {
@@ -48,7 +72,11 @@ export default function MultiplayerRoom() {
         setGameState(msg.payload.gameState);
       }),
       peerService.on('PLAYER_DISCONNECTED', (msg) => {
-        toast.warning(`${msg.payload.playerName} disconnected`);
+        toast.warning(
+          roomState?.anonymousMode && !isHost
+            ? 'A player disconnected'
+            : `${msg.payload.playerName} disconnected`
+        );
       }),
       peerService.on('HOST_DISCONNECTED', () => {
         setHostDisconnected(true);
@@ -72,18 +100,29 @@ export default function MultiplayerRoom() {
     }
   }, []);
 
+  useEffect(() => {
+    if (!roomState) return;
+
+    const currentPlayer = roomState.players.find((player) => getIsCurrentPlayer(player));
+
+    setMyRole(currentPlayer?.role);
+    setIsReady(!!currentPlayer?.isReady);
+  }, [roomState, isHost, playerName]);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setNowMs(Date.now());
+    }, 250);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       // Only cleanup if navigating away (not on re-render)
     };
   }, []);
-
-  const handleSelectRole = (role: Role) => {
-    if (!roomId) return;
-    peerService.selectRole(role);
-    setMyRole(role);
-  };
 
   const handleReady = () => {
     if (!roomId) return;
@@ -103,6 +142,11 @@ export default function MultiplayerRoom() {
     setWaitingForOthers(true);
   };
 
+  const handleDraftOrderChange = (quantity: number) => {
+    if (!myRole || !gameState) return;
+    peerService.updateDraftOrder(myRole, quantity);
+  };
+
   const handleCopyRoomId = () => {
     if (roomId) {
       navigator.clipboard.writeText(roomId).catch(() => {
@@ -118,6 +162,60 @@ export default function MultiplayerRoom() {
     peerService.cleanup();
     navigate('/');
   };
+
+  const handleHostRoleChange = (playerId: string, role: Role) => {
+    const changed = peerService.assignRole(playerId, role);
+    if (!changed) {
+      toast.error('Could not change role');
+    }
+  };
+
+  const playerHistory = gameState && myRole ? gameState.history[myRole] : [];
+  const latestPlayerRecord = playerHistory[playerHistory.length - 1];
+  const pendingCostReview = latestPlayerRecord && latestPlayerRecord.week <= 10 && !costReviews[latestPlayerRecord.week]
+    ? latestPlayerRecord
+    : null;
+  const latestCostReview = latestPlayerRecord ? costReviews[latestPlayerRecord.week] || null : null;
+
+  const handleSubmitCostReview = (enteredCost: number) => {
+    if (!pendingCostReview) return;
+
+    const trueCost = Number(pendingCostReview.cost.toFixed(2));
+    const normalizedEntry = Number(enteredCost.toFixed(2));
+
+    setCostReviews((prev) => ({
+      ...prev,
+      [pendingCostReview.week]: {
+        week: pendingCostReview.week,
+        enteredCost: normalizedEntry,
+        trueCost,
+        isCorrect: Math.abs(normalizedEntry - trueCost) < 0.01,
+      },
+    }));
+  };
+
+  const handleAnonymousModeToggle = (enabled: boolean) => {
+    const changed = peerService.setAnonymousMode(enabled);
+    if (!changed) {
+      toast.error('Anonymous mode can only be changed before the game starts');
+    }
+  };
+
+  const handleTimerConfigChange = (field: keyof TimerConfig, value: number) => {
+    const changed = peerService.updateTimerConfig({ [field]: value });
+    if (!changed) {
+      toast.error('Timer settings can only be changed before the game starts');
+    }
+  };
+
+  const timerState = roomState?.timerState;
+  const remainingSeconds = timerState?.isActive
+    ? Math.max(0, Math.ceil((timerState.endsAtMs - nowMs) / 1000))
+    : null;
+  const minutes = remainingSeconds !== null ? Math.floor(remainingSeconds / 60) : 0;
+  const seconds = remainingSeconds !== null ? remainingSeconds % 60 : 0;
+  const timerLabel = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  const timerConfig = roomState?.gameConfig?.timerConfig;
 
   // Host disconnected screen
   if (hostDisconnected) {
@@ -147,6 +245,8 @@ export default function MultiplayerRoom() {
       <GameSummary
         gameState={gameState}
         onRestart={handleLeave}
+        playerRoleOverride={myRole}
+        privateView={true}
       />
     );
   }
@@ -174,13 +274,37 @@ export default function MultiplayerRoom() {
               </div>
             </div>
 
-            {waitingForOthers && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                Waiting for other players...
-              </div>
-            )}
+            <div className="flex items-center gap-3">
+              {timerState?.isActive && (
+                <div className="rounded-lg border border-primary/30 bg-primary/10 px-3 py-2 text-right">
+                  <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Round Timer</p>
+                  <p className="text-lg font-bold text-primary">{timerLabel}</p>
+                </div>
+              )}
+
+              {waitingForOthers && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                  Waiting for other players...
+                </div>
+              )}
+            </div>
           </div>
+
+          {timerState?.isActive && (
+            <div className="glass-card rounded-xl p-4 flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold text-foreground">Round {timerState.round} countdown</p>
+                <p className="text-xs text-muted-foreground">
+                  If time runs out, your latest valid draft order will be submitted automatically.
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-3xl font-bold text-primary tabular-nums">{timerLabel}</p>
+                <p className="text-xs text-muted-foreground">{timerState.durationSeconds}s this round</p>
+              </div>
+            </div>
+          )}
 
           {/* Reuse single-player components */}
           <div className="grid lg:grid-cols-3 gap-6">
@@ -188,9 +312,12 @@ export default function MultiplayerRoom() {
               <div className="glass-card rounded-xl p-6 space-y-4">
                 <h2 className="text-lg font-semibold text-foreground">Place Your Order</h2>
                 <MultiplayerOrderInput
+                  role={myRole}
+                  round={gameState.currentWeek}
                   stage={playerStage}
+                  onDraftChange={handleDraftOrderChange}
                   onSubmitOrder={handleSubmitOrder}
-                  disabled={hasSubmittedOrder}
+                  disabled={hasSubmittedOrder || !!pendingCostReview}
                 />
                 {hasSubmittedOrder && (
                   <div className="flex items-center gap-2 text-sm text-success bg-success/10 rounded-lg p-3">
@@ -199,32 +326,40 @@ export default function MultiplayerRoom() {
                   </div>
                 )}
               </div>
+              <div className="glass-card rounded-xl p-6 space-y-4">
+                <h2 className="text-lg font-semibold text-foreground">Your Operations</h2>
+                <div className="grid grid-cols-2 gap-3 text-center">
+                  <div className="bg-muted/50 rounded-lg p-3">
+                    <p className="text-xs text-muted-foreground">Incoming Shipments</p>
+                    <p className="mt-1 text-2xl font-bold text-success">{playerStage.incomingShipments}</p>
+                  </div>
+                  <div className="bg-muted/50 rounded-lg p-3">
+                    <p className="text-xs text-muted-foreground">Outgoing Shipments</p>
+                    <p className="mt-1 text-2xl font-bold text-accent">{playerStage.outgoingShipments}</p>
+                  </div>
+                  <div className="bg-muted/50 rounded-lg p-3">
+                    <p className="text-xs text-muted-foreground">Last Order Placed</p>
+                    <p className="mt-1 text-2xl font-bold text-primary">{playerStage.lastOrderPlaced}</p>
+                  </div>
+                  <div className="bg-muted/50 rounded-lg p-3">
+                    <p className="text-xs text-muted-foreground">Current Role</p>
+                    <p className="mt-1 text-lg font-bold text-foreground">{ROLE_LABELS[myRole]}</p>
+                  </div>
+                </div>
+              </div>
+              <CostSummary
+                gameState={gameState}
+                viewerRoleOverride={myRole}
+                privateView={true}
+                pendingCostReview={pendingCostReview}
+                latestCostReview={latestCostReview}
+                onSubmitCostReview={handleSubmitCostReview}
+              />
             </div>
             <div className="lg:col-span-2 space-y-6">
-              {/* Supply chain overview - read only */}
               <div className="glass-card rounded-xl p-6">
-                <h3 className="text-lg font-semibold text-foreground mb-4">Supply Chain Status</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {(['retailer', 'wholesaler', 'distributor', 'factory'] as Role[]).map(role => {
-                    const stage = gameState.stages[role];
-                    const isMe = role === myRole;
-                    return (
-                      <div key={role} className={cn(
-                        'rounded-lg p-3 text-center',
-                        isMe ? 'bg-primary/10 border border-primary/30' : 'bg-muted/50'
-                      )}>
-                        <p className={cn('text-xs font-medium mb-1', isMe ? 'text-primary' : 'text-muted-foreground')}>
-                          {ROLE_LABELS[role]} {isMe && '(You)'}
-                        </p>
-                        <p className="text-lg font-bold text-success">{stage.inventory}</p>
-                        <p className="text-[10px] text-muted-foreground">inventory</p>
-                        {stage.backlog > 0 && (
-                          <p className="text-xs text-destructive font-medium">-{stage.backlog} backlog</p>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+                <h3 className="text-lg font-semibold text-foreground mb-4">Private History</h3>
+                <GameCharts history={gameState.history} playerRole={myRole} />
               </div>
             </div>
           </div>
@@ -261,18 +396,18 @@ export default function MultiplayerRoom() {
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            {(roomState?.players || []).map(player => (
+            {(roomState?.players || []).map((player, index) => (
               <div key={player.id} className={cn(
                 'rounded-lg p-3 border',
                 player.isReady ? 'border-success/50 bg-success/5' : 'border-border bg-muted/30'
               )}>
                 <div className="flex items-center gap-2 mb-1">
-                  {player.isHost && <Crown className="h-3 w-3 text-primary" />}
-                  <span className="text-sm font-medium text-foreground">{player.name}</span>
+                  {(!roomState?.anonymousMode || isHost) && player.isHost && <Crown className="h-3 w-3 text-primary" />}
+                  <span className="text-sm font-medium text-foreground">{getDisplayName(player, index)}</span>
                   {player.isReady && <CheckCircle2 className="h-3 w-3 text-success ml-auto" />}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {player.role ? ROLE_LABELS[player.role] : 'Choosing role...'}
+                  {player.role ? ROLE_LABELS[player.role] : 'AI controlled'}
                 </p>
               </div>
             ))}
@@ -286,15 +421,119 @@ export default function MultiplayerRoom() {
           </div>
         </div>
 
-        {/* Role Selection */}
+        {/* Assigned Role */}
         <div className="glass-card rounded-xl p-6 space-y-4">
-          <h2 className="font-semibold text-foreground">Choose Your Role</h2>
-          <RoleSelector
-            selectedRole={myRole || 'retailer'}
-            onRoleSelect={handleSelectRole}
-            disabledRoles={roomState?.players?.filter(p => p.role && p.name !== playerName).map(p => p.role!) || []}
-          />
+          <h2 className="font-semibold text-foreground">Your Assignment</h2>
+          <div className="rounded-lg bg-muted/30 p-4">
+            <p className="text-sm text-muted-foreground">Assigned role</p>
+            <p className="mt-1 text-xl font-bold text-primary">
+              {myRole ? ROLE_LABELS[myRole] : 'Waiting for host assignment'}
+            </p>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Roles are assigned automatically. Any missing roles are handled by AI.
+            </p>
+          </div>
         </div>
+
+        {isHost && !roomState?.isGameStarted && (
+          <div className="glass-card rounded-xl p-6 space-y-4">
+            <div className="rounded-lg bg-muted/30 p-4 flex items-center justify-between gap-4">
+              <div>
+                <h2 className="font-semibold text-foreground">Anonymous Players</h2>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Hide real player identities from regular players for this session.
+                </p>
+              </div>
+              <label className="flex items-center gap-3 text-sm text-foreground">
+                <span>{roomState?.anonymousMode ? 'ON' : 'OFF'}</span>
+                <input
+                  type="checkbox"
+                  checked={!!roomState?.anonymousMode}
+                  onChange={(e) => handleAnonymousModeToggle(e.target.checked)}
+                  className="h-4 w-4 accent-primary"
+                />
+              </label>
+            </div>
+
+            <div>
+              <h2 className="font-semibold text-foreground">Admin Role Overrides</h2>
+              <p className="text-xs text-muted-foreground mt-1">
+                Automatic assignment is the default. Use these controls only if you want to manually adjust seats.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              {(roomState?.players || []).map((player, index) => (
+                <div key={player.id} className="flex items-center justify-between gap-3 rounded-lg bg-muted/30 p-3">
+                  <div>
+                    <p className="text-sm font-medium text-foreground">
+                      {getDisplayName(player, index)} {player.isHost && '(Host)'}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Current: {player.role ? ROLE_LABELS[player.role] : 'Unassigned'}
+                    </p>
+                  </div>
+
+                  <select
+                    value={player.role || ''}
+                    onChange={(e) => handleHostRoleChange(player.id, e.target.value as Role)}
+                    className="h-10 rounded-lg border border-border bg-secondary px-3 text-sm text-foreground"
+                  >
+                    {(['retailer', 'wholesaler', 'distributor', 'factory'] as Role[]).map((role) => (
+                      <option key={role} value={role}>
+                        {ROLE_LABELS[role]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ))}
+            </div>
+
+            {timerConfig && (
+              <div className="space-y-3 pt-2">
+                <div>
+                  <h2 className="font-semibold text-foreground">Round Timer Settings</h2>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    The host controls the round clock. Settings lock when the game starts.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <TimerNumberField
+                    label="Early rounds"
+                    value={timerConfig.earlyRounds}
+                    min={0}
+                    onChange={(value) => handleTimerConfigChange('earlyRounds', value)}
+                  />
+                  <TimerNumberField
+                    label="Final rounds"
+                    value={timerConfig.finalRounds}
+                    min={0}
+                    onChange={(value) => handleTimerConfigChange('finalRounds', value)}
+                  />
+                  <TimerNumberField
+                    label="Early duration (s)"
+                    value={timerConfig.earlyRoundDurationSec}
+                    min={5}
+                    onChange={(value) => handleTimerConfigChange('earlyRoundDurationSec', value)}
+                  />
+                  <TimerNumberField
+                    label="Middle duration (s)"
+                    value={timerConfig.middleRoundDurationSec}
+                    min={5}
+                    onChange={(value) => handleTimerConfigChange('middleRoundDurationSec', value)}
+                  />
+                  <TimerNumberField
+                    label="Final duration (s)"
+                    value={timerConfig.finalRoundDurationSec}
+                    min={5}
+                    onChange={(value) => handleTimerConfigChange('finalRoundDurationSec', value)}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Actions */}
         <div className="flex gap-3">
@@ -330,12 +569,23 @@ export default function MultiplayerRoom() {
 }
 
 // Simple multiplayer order input
-function MultiplayerOrderInput({ stage, onSubmitOrder, disabled }: {
-  stage: { inventory: number; backlog: number; incomingOrders: number };
+function MultiplayerOrderInput({ role, round, stage, onDraftChange, onSubmitOrder, disabled }: {
+  role: Role;
+  round: number;
+  stage: { inventory: number; backlog: number; incomingOrders: number; lastOrderPlaced: number };
+  onDraftChange: (q: number) => void;
   onSubmitOrder: (q: number) => void;
   disabled: boolean;
 }) {
   const [qty, setQty] = useState(4);
+
+  useEffect(() => {
+    const nextQty = Math.max(0, stage.lastOrderPlaced ?? 4);
+    setQty(nextQty);
+    onDraftChange(nextQty);
+  }, [round, stage.lastOrderPlaced, onDraftChange]);
+
+  const incomingLabel = role === 'retailer' ? 'Customer Demand' : 'Orders In';
   return (
     <div className="space-y-3">
       <div className="grid grid-cols-3 gap-2 text-center text-xs">
@@ -348,7 +598,7 @@ function MultiplayerOrderInput({ stage, onSubmitOrder, disabled }: {
           <p className="text-lg font-bold text-destructive">{stage.backlog}</p>
         </div>
         <div className="bg-muted/50 rounded-lg p-2">
-          <p className="text-muted-foreground">Orders In</p>
+          <p className="text-muted-foreground">{incomingLabel}</p>
           <p className="text-lg font-bold text-accent">{stage.incomingOrders}</p>
         </div>
       </div>
@@ -358,7 +608,11 @@ function MultiplayerOrderInput({ stage, onSubmitOrder, disabled }: {
           min={0}
           max={999}
           value={qty}
-          onChange={e => setQty(Math.max(0, parseInt(e.target.value) || 0))}
+          onChange={e => {
+            const nextQty = Math.max(0, parseInt(e.target.value) || 0);
+            setQty(nextQty);
+            onDraftChange(nextQty);
+          }}
           disabled={disabled}
           className="flex-1 h-12 text-center text-xl font-bold rounded-lg bg-secondary border border-border text-foreground"
         />
@@ -367,5 +621,25 @@ function MultiplayerOrderInput({ stage, onSubmitOrder, disabled }: {
         </Button>
       </div>
     </div>
+  );
+}
+
+function TimerNumberField({ label, value, min, onChange }: {
+  label: string;
+  value: number;
+  min: number;
+  onChange: (value: number) => void;
+}) {
+  return (
+    <label className="space-y-2 rounded-lg bg-muted/30 p-3">
+      <span className="block text-xs text-muted-foreground">{label}</span>
+      <input
+        type="number"
+        min={min}
+        value={value}
+        onChange={(e) => onChange(Math.max(min, parseInt(e.target.value, 10) || min))}
+        className="h-10 w-full rounded-lg border border-border bg-secondary px-3 text-sm text-foreground"
+      />
+    </label>
   );
 }

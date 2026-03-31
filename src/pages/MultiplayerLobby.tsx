@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { peerService } from '@/lib/peerService';
+import { DEFAULT_CONFIG, DEFAULT_DEMAND_CONFIG, DemandPattern } from '@/types/game';
 import { ArrowLeft, Plus, LogIn, Loader2, Wifi, WifiOff } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -16,6 +17,10 @@ export default function MultiplayerLobby() {
   const [roomId, setRoomId] = useState('');
   const [password, setPassword] = useState('');
   const [isConnecting, setIsConnecting] = useState(false);
+  const [demandPattern, setDemandPattern] = useState<DemandPattern>(DEFAULT_CONFIG.demandPattern);
+  const [baseDemand, setBaseDemand] = useState(DEFAULT_DEMAND_CONFIG.baseDemand);
+  const [spikeWeek, setSpikeWeek] = useState(DEFAULT_DEMAND_CONFIG.spikeWeek);
+  const [spikeAmount, setSpikeAmount] = useState(DEFAULT_DEMAND_CONFIG.spikeAmount);
 
   const handleCreate = async () => {
     if (!playerName.trim()) {
@@ -29,7 +34,15 @@ export default function MultiplayerLobby() {
 
     setIsConnecting(true);
     try {
-      const newRoomId = await peerService.createRoom(password, playerName.trim());
+      const newRoomId = await peerService.createRoom(password, playerName.trim(), {
+        demandPattern,
+        demandConfig: {
+          ...DEFAULT_DEMAND_CONFIG,
+          baseDemand,
+          spikeWeek,
+          spikeAmount,
+        },
+      });
       navigate(`/multiplayer/room/${newRoomId}`, {
         state: { playerName: playerName.trim(), isHost: true },
       });
@@ -153,6 +166,69 @@ export default function MultiplayerLobby() {
                 maxLength={32}
               />
               <p className="text-xs text-muted-foreground">Share this password with your teammates</p>
+            </div>
+
+            <div className="space-y-3 rounded-lg bg-muted/20 p-4">
+              <Label className="text-sm font-semibold">Demand Pattern</Label>
+              <div className="grid grid-cols-2 gap-2">
+                {(['constant', 'spike'] as DemandPattern[]).map((pattern) => (
+                  <button
+                    key={pattern}
+                    onClick={() => setDemandPattern(pattern)}
+                    className={`rounded-lg border px-3 py-2 text-sm ${
+                      demandPattern === pattern
+                        ? 'border-primary bg-primary/10 text-primary'
+                        : 'border-border bg-secondary text-muted-foreground'
+                    }`}
+                  >
+                    {pattern === 'constant' ? 'Constant' : 'Spike'}
+                  </button>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="base-demand" className="text-xs text-muted-foreground">Base Demand</Label>
+                  <Input
+                    id="base-demand"
+                    type="number"
+                    min={1}
+                    max={20}
+                    value={baseDemand}
+                    onChange={(e) => setBaseDemand(Math.max(1, parseInt(e.target.value) || DEFAULT_DEMAND_CONFIG.baseDemand))}
+                    className="bg-secondary border-border"
+                  />
+                </div>
+
+                {demandPattern === 'spike' && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="spike-week" className="text-xs text-muted-foreground">Spike Week</Label>
+                      <Input
+                        id="spike-week"
+                        type="number"
+                        min={3}
+                        max={35}
+                        value={spikeWeek}
+                        onChange={(e) => setSpikeWeek(Math.max(3, parseInt(e.target.value) || DEFAULT_DEMAND_CONFIG.spikeWeek))}
+                        className="bg-secondary border-border"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="spike-amount" className="text-xs text-muted-foreground">Spike Amount</Label>
+                      <Input
+                        id="spike-amount"
+                        type="number"
+                        min={1}
+                        max={50}
+                        value={spikeAmount}
+                        onChange={(e) => setSpikeAmount(Math.max(1, parseInt(e.target.value) || DEFAULT_DEMAND_CONFIG.spikeAmount))}
+                        className="bg-secondary border-border"
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
 
             <Button

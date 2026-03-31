@@ -166,7 +166,7 @@ export function GameSetup({ onStartGame }: GameSetupProps) {
                 <Slider
                   value={[orderDelay]}
                   onValueChange={([val]) => setOrderDelay(val)}
-                  min={0}
+                  min={1}
                   max={5}
                   step={1}
                 />
@@ -179,7 +179,7 @@ export function GameSetup({ onStartGame }: GameSetupProps) {
                 <Slider
                   value={[shipmentDelay]}
                   onValueChange={([val]) => setShipmentDelay(val)}
-                  min={0}
+                  min={1}
                   max={5}
                   step={1}
                 />

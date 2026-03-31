@@ -1,5 +1,5 @@
 import Peer, { DataConnection } from 'peerjs';
-import { Role, GameState, GameConfig, DEFAULT_CONFIG, DEFAULT_DEMAND_CONFIG } from '@/types/game';
+import { Role, GameState, GameConfig, DEFAULT_CONFIG, DEFAULT_DEMAND_CONFIG, TimerConfig } from '@/types/game';
 import { initializeGame, advanceWeekMultiplayer, calculateAIOrder } from '@/lib/gameLogic';
 
 // ============================================================
@@ -23,7 +23,17 @@ export interface RoomState {
   players: MultiplayerPlayer[];
   availableRoles: Role[];
   gameConfig?: GameConfig;
+  anonymousMode: boolean;
+  timerState: RoundTimerState | null;
   isGameStarted: boolean;
+}
+
+export interface RoundTimerState {
+  round: number;
+  durationSeconds: number;
+  startedAtMs: number;
+  endsAtMs: number;
+  isActive: boolean;
 }
 
 // --- Message Protocol ---
@@ -32,6 +42,7 @@ export type P2PMessageType =
   | 'JOIN_ROOM'
   | 'SELECT_ROLE'
   | 'PLAYER_READY'
+  | 'UPDATE_DRAFT_ORDER'
   | 'SUBMIT_ORDER'
   // Host → Client
   | 'ROOM_JOINED'
@@ -77,6 +88,12 @@ class PeerService {
   private gameConfig: GameConfig = { ...DEFAULT_CONFIG, demandConfig: { ...DEFAULT_DEMAND_CONFIG } };
   private pendingOrders: Map<Role, number> = new Map();
   private occupiedRoles: Set<Role> = new Set();
+  private currentRoomState: RoomState | null = null;
+  private anonymousMode = false;
+  private draftOrders: Map<Role, number> = new Map();
+  private timerState: RoundTimerState | null = null;
+  private roundTimerHandle: ReturnType<typeof setTimeout> | null = null;
+  private isResolvingRound = false;
 
   // Client state
   private _isConnected = false;
@@ -84,6 +101,154 @@ class PeerService {
 
   get isHost() { return this._isHost; }
   get isConnected() { return this._isConnected; }
+
+  private shuffleRoles(roles: Role[]): Role[] {
+    const shuffled = [...roles];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  }
+
+  private syncOccupiedRoles() {
+    this.occupiedRoles = new Set(
+      this.players
+        .map(player => player.role)
+        .filter((role): role is Role => role !== undefined)
+    );
+  }
+
+  private autoAssignRoles() {
+    if (this.gameState) return;
+
+    const usedRoles = new Set<Role>();
+    const unassignedPlayers: MultiplayerPlayer[] = [];
+
+    this.players.forEach((player) => {
+      if (player.role && !usedRoles.has(player.role)) {
+        usedRoles.add(player.role);
+      } else {
+        player.role = undefined;
+        unassignedPlayers.push(player);
+      }
+    });
+
+    const availableRoles = this.shuffleRoles(
+      ALL_ROLES.filter(role => !usedRoles.has(role))
+    );
+
+    unassignedPlayers.forEach((player, index) => {
+      player.role = availableRoles[index];
+    });
+
+    this.syncOccupiedRoles();
+  }
+
+  private getTimerConfig(): TimerConfig {
+    return this.gameConfig.timerConfig || DEFAULT_CONFIG.timerConfig;
+  }
+
+  private getRoundDurationSeconds(round: number): number {
+    const timerConfig = this.getTimerConfig();
+    const finalRoundsStart = Math.max(1, this.gameConfig.totalWeeks - timerConfig.finalRounds + 1);
+
+    if (round <= timerConfig.earlyRounds) {
+      return timerConfig.earlyRoundDurationSec;
+    }
+
+    if (round >= finalRoundsStart) {
+      return timerConfig.finalRoundDurationSec;
+    }
+
+    return timerConfig.middleRoundDurationSec;
+  }
+
+  private clearRoundTimer() {
+    if (this.roundTimerHandle) {
+      clearTimeout(this.roundTimerHandle);
+      this.roundTimerHandle = null;
+    }
+    this.timerState = null;
+  }
+
+  private startRoundTimer() {
+    if (!this.gameState || this.gameState.isGameOver) return;
+
+    this.clearRoundTimer();
+
+    const durationSeconds = this.getRoundDurationSeconds(this.gameState.currentWeek);
+    const startedAtMs = Date.now();
+    const endsAtMs = startedAtMs + durationSeconds * 1000;
+
+    this.timerState = {
+      round: this.gameState.currentWeek,
+      durationSeconds,
+      startedAtMs,
+      endsAtMs,
+      isActive: true,
+    };
+
+    this.broadcastRoomState();
+
+    this.roundTimerHandle = setTimeout(() => {
+      this.handleRoundTimeout(this.gameState?.currentWeek || 0);
+    }, durationSeconds * 1000);
+  }
+
+  private resolveCurrentRound(finalizeMissingOrders = false) {
+    if (!this.gameState || this.gameState.isGameOver || this.isResolvingRound) return;
+
+    const humanRoles = this.players
+      .filter(player => player.role && player.isConnected)
+      .map(player => player.role!);
+
+    if (finalizeMissingOrders) {
+      humanRoles.forEach((role) => {
+        if (!this.pendingOrders.has(role)) {
+          const fallbackOrder = this.draftOrders.get(role) ?? this.gameState!.stages[role].lastOrderPlaced;
+          this.pendingOrders.set(role, Math.max(0, fallbackOrder));
+        }
+      });
+    }
+
+    const allSubmitted = humanRoles.every(role => this.pendingOrders.has(role));
+    if (!allSubmitted) return;
+
+    this.isResolvingRound = true;
+    this.clearRoundTimer();
+
+    const orders: Partial<Record<Role, number>> = {};
+    this.pendingOrders.forEach((qty, role) => {
+      orders[role] = qty;
+    });
+
+    this.gameState = advanceWeekMultiplayer(this.gameState, orders);
+    this.pendingOrders.clear();
+    this.draftOrders.clear();
+
+    if (this.gameState.isGameOver) {
+      const msg: P2PMessage = { type: 'GAME_OVER', payload: { gameState: this.gameState } };
+      this.broadcastToClients(msg);
+      this.dispatch(msg);
+      this.broadcastRoomState();
+    } else {
+      const msg: P2PMessage = { type: 'GAME_STATE', payload: this.gameState };
+      this.broadcastToClients(msg);
+      this.dispatch(msg);
+      this.startRoundTimer();
+    }
+
+    this.isResolvingRound = false;
+  }
+
+  private handleRoundTimeout(expectedRound: number) {
+    if (!this.gameState || this.gameState.currentWeek !== expectedRound || this.gameState.isGameOver) {
+      return;
+    }
+
+    this.resolveCurrentRound(true);
+  }
 
   // ========== HOST METHODS ==========
 
@@ -93,12 +258,14 @@ class PeerService {
       this._isHost = true;
       this.roomPassword = password;
       this.roomId = generateRoomId();
+      this.anonymousMode = false;
 
       if (gameConfig) {
         this.gameConfig = {
           ...DEFAULT_CONFIG,
           ...gameConfig,
           demandConfig: { ...DEFAULT_DEMAND_CONFIG, ...(gameConfig.demandConfig || {}) },
+          timerConfig: { ...DEFAULT_CONFIG.timerConfig, ...(gameConfig.timerConfig || {}) },
         };
       }
 
@@ -118,8 +285,10 @@ class PeerService {
           isHost: true,
           isConnected: true,
         }];
+        this.autoAssignRoles();
 
         this._isConnected = true;
+        this.broadcastRoomState();
         resolve(this.roomId);
       });
 
@@ -205,6 +374,7 @@ class PeerService {
         };
         this.players.push(player);
         this.connections.set(conn.peer, conn);
+        this.autoAssignRoles();
 
         // Send ROOM_JOINED to the new player
         this.sendTo(conn, {
@@ -218,25 +388,7 @@ class PeerService {
       }
 
       case 'SELECT_ROLE': {
-        const { role } = message.payload as { role: Role };
-        const player = this.players.find(p => p.id === conn.peer);
-
-        if (!player) return;
-
-        // Check if role is available
-        if (this.occupiedRoles.has(role)) {
-          this.sendTo(conn, { type: 'ERROR', payload: { message: `${role} is already taken` } });
-          return;
-        }
-
-        // Release previous role if any
-        if (player.role) {
-          this.occupiedRoles.delete(player.role);
-        }
-
-        player.role = role;
-        this.occupiedRoles.add(role);
-        this.broadcastRoomState();
+        this.sendTo(conn, { type: 'ERROR', payload: { message: 'Only the host can change roles' } });
         break;
       }
 
@@ -249,26 +401,67 @@ class PeerService {
         break;
       }
 
+      case 'UPDATE_DRAFT_ORDER': {
+        const { role, quantity } = message.payload as { role: Role; quantity: number };
+        this.draftOrders.set(role, Math.max(0, quantity));
+        break;
+      }
+
       case 'SUBMIT_ORDER': {
         const { role, quantity } = message.payload as { role: Role; week: number; quantity: number };
         this.pendingOrders.set(role, Math.max(0, quantity));
-        this.tryAdvanceWeek();
+        this.draftOrders.set(role, Math.max(0, quantity));
+        this.resolveCurrentRound();
         break;
       }
     }
   }
 
-  // Host selects own role
-  hostSelectRole(role: Role): boolean {
-    if (this.occupiedRoles.has(role)) return false;
+  assignRole(playerId: string, role: Role): boolean {
+    if (!this._isHost || this.gameState) return false;
 
-    const hostPlayer = this.players.find(p => p.isHost);
-    if (hostPlayer) {
-      if (hostPlayer.role) this.occupiedRoles.delete(hostPlayer.role);
-      hostPlayer.role = role;
-      this.occupiedRoles.add(role);
-      this.broadcastRoomState();
+    const targetPlayer = this.players.find(player => player.id === playerId);
+    if (!targetPlayer) return false;
+
+    const currentHolder = this.players.find(player => player.id !== playerId && player.role === role);
+    const previousRole = targetPlayer.role;
+
+    targetPlayer.role = role;
+
+    if (currentHolder) {
+      currentHolder.role = previousRole;
     }
+
+    this.syncOccupiedRoles();
+    this.broadcastRoomState();
+    return true;
+  }
+
+  updateTimerConfig(patch: Partial<TimerConfig>): boolean {
+    if (!this._isHost || this.gameState) return false;
+
+    const current = this.getTimerConfig();
+    this.gameConfig = {
+      ...this.gameConfig,
+      timerConfig: {
+        ...current,
+        ...patch,
+        earlyRounds: Math.max(0, patch.earlyRounds ?? current.earlyRounds),
+        finalRounds: Math.max(0, patch.finalRounds ?? current.finalRounds),
+        earlyRoundDurationSec: Math.max(5, patch.earlyRoundDurationSec ?? current.earlyRoundDurationSec),
+        middleRoundDurationSec: Math.max(5, patch.middleRoundDurationSec ?? current.middleRoundDurationSec),
+        finalRoundDurationSec: Math.max(5, patch.finalRoundDurationSec ?? current.finalRoundDurationSec),
+      },
+    };
+
+    this.broadcastRoomState();
+    return true;
+  }
+
+  setAnonymousMode(enabled: boolean): boolean {
+    if (!this._isHost || this.gameState) return false;
+    this.anonymousMode = enabled;
+    this.broadcastRoomState();
     return true;
   }
 
@@ -284,12 +477,24 @@ class PeerService {
   // Host submits order
   hostSubmitOrder(role: Role, quantity: number) {
     this.pendingOrders.set(role, Math.max(0, quantity));
-    this.tryAdvanceWeek();
+    this.draftOrders.set(role, Math.max(0, quantity));
+    this.resolveCurrentRound();
+  }
+
+  updateDraftOrder(role: Role, quantity: number) {
+    if (this._isHost) {
+      this.draftOrders.set(role, Math.max(0, quantity));
+      return;
+    }
+
+    this.sendToHost({ type: 'UPDATE_DRAFT_ORDER', payload: { role, quantity } });
   }
 
   // Host starts game
   startGame() {
     if (!this._isHost) return;
+
+    this.autoAssignRoles();
 
     // All connected players must be ready and have roles
     const readyPlayers = this.players.filter(p => p.isReady && p.role);
@@ -313,39 +518,8 @@ class PeerService {
 
     // Also dispatch locally for host UI
     this.dispatch(startMsg);
-  }
-
-  private tryAdvanceWeek() {
-    if (!this.gameState || this.gameState.isGameOver) return;
-
-    // Find which roles are human
-    const humanRoles = this.players
-      .filter(p => p.role && p.isConnected)
-      .map(p => p.role!);
-
-    // Check if all human players have submitted orders
-    const allSubmitted = humanRoles.every(role => this.pendingOrders.has(role));
-    if (!allSubmitted) return;
-
-    // Build orders map: human orders + AI for unoccupied roles
-    const orders: Partial<Record<Role, number>> = {};
-    this.pendingOrders.forEach((qty, role) => {
-      orders[role] = qty;
-    });
-
-    // Advance week
-    this.gameState = advanceWeekMultiplayer(this.gameState, orders);
-    this.pendingOrders.clear();
-
-    if (this.gameState.isGameOver) {
-      const msg: P2PMessage = { type: 'GAME_OVER', payload: { gameState: this.gameState } };
-      this.broadcastToClients(msg);
-      this.dispatch(msg);
-    } else {
-      const msg: P2PMessage = { type: 'GAME_STATE', payload: this.gameState };
-      this.broadcastToClients(msg);
-      this.dispatch(msg);
-    }
+    this.broadcastRoomState();
+    this.startRoundTimer();
   }
 
   private handlePlayerDisconnect(peerId: string) {
@@ -368,11 +542,12 @@ class PeerService {
 
     // Remove from players list
     this.players = this.players.filter(p => p.id !== peerId);
+    this.autoAssignRoles();
     this.broadcastRoomState();
 
     // If game is in progress and player had a role, try advance with AI
     if (this.gameState && !this.gameState.isGameOver) {
-      this.tryAdvanceWeek();
+      this.resolveCurrentRound(true);
     }
   }
 
@@ -383,8 +558,11 @@ class PeerService {
       players: this.players,
       availableRoles,
       gameConfig: this.gameConfig,
+      anonymousMode: this.anonymousMode,
+      timerState: this.timerState,
       isGameStarted: !!this.gameState,
     };
+    this.currentRoomState = roomState;
 
     const msg: P2PMessage = { type: 'ROOM_STATE', payload: roomState };
     this.broadcastToClients(msg);
@@ -430,6 +608,11 @@ class PeerService {
           conn.on('data', (rawData) => {
             const data = rawData as P2PMessage;
             console.log('[P2P Client] Received:', data.type);
+
+            if (data.type === 'ROOM_JOINED' || data.type === 'ROOM_STATE') {
+              this.currentRoomState = data.payload as RoomState;
+            }
+
             this.dispatch(data);
 
             // Resolve on ROOM_JOINED
@@ -474,11 +657,8 @@ class PeerService {
 
   // Client sends role selection to host
   selectRole(role: Role) {
-    if (this._isHost) {
-      this.hostSelectRole(role);
-    } else {
-      this.sendToHost({ type: 'SELECT_ROLE', payload: { role } });
-    }
+    if (this._isHost || this.gameState) return;
+    this.sendToHost({ type: 'SELECT_ROLE', payload: { role } });
   }
 
   // Client sends ready to host
@@ -512,6 +692,10 @@ class PeerService {
 
   /** Get current room state snapshot (for initial UI render) */
   getCurrentRoomState(): RoomState | null {
+    if (this.currentRoomState) {
+      return this.currentRoomState;
+    }
+
     if (!this._isConnected && !this._isHost) return null;
     if (this.players.length === 0) return null;
 
@@ -521,6 +705,8 @@ class PeerService {
       players: [...this.players],
       availableRoles,
       gameConfig: this.gameConfig,
+      anonymousMode: this.anonymousMode,
+      timerState: this.timerState,
       isGameStarted: !!this.gameState,
     };
   }
@@ -571,6 +757,11 @@ class PeerService {
     this.gameState = null;
     this.pendingOrders.clear();
     this.occupiedRoles.clear();
+    this.currentRoomState = null;
+    this.anonymousMode = false;
+    this.draftOrders.clear();
+    this.clearRoundTimer();
+    this.isResolvingRound = false;
     this.handlers.clear();
     this.roomPassword = '';
     this.roomId = '';

@@ -8,7 +8,7 @@ interface SupplyChainFlowProps {
 
 export function SupplyChainFlow({ gameState }: SupplyChainFlowProps) {
   const { stages, playerRole, customerDemand, currentWeek } = gameState;
-  const currentDemand = customerDemand[Math.max(0, currentWeek - 2)] || 4;
+  const currentDemand = customerDemand[Math.max(0, currentWeek - 1)] || 4;
 
   return (
     <div className="space-y-4">

@@ -27,7 +27,7 @@ export function generateDemand(pattern: DemandPattern, weeks: number, demandConf
         break;
       case 'spike':
         // Classic beer game: constant then step up permanently at spike week
-        demand.push(i < demandConfig.spikeWeek ? demandConfig.baseDemand : demandConfig.spikeAmount);
+        demand.push(i + 1 < demandConfig.spikeWeek ? demandConfig.baseDemand : demandConfig.spikeAmount);
         break;
       case 'seasonal':
         // Sinusoidal pattern around base demand
@@ -70,6 +70,11 @@ export function initializeGame(config: Partial<GameConfig> = {}): GameState {
   if (config.demandConfig) {
     finalConfig.demandConfig = { ...DEFAULT_DEMAND_CONFIG, ...config.demandConfig };
   }
+  if (config.timerConfig) {
+    finalConfig.timerConfig = { ...DEFAULT_CONFIG.timerConfig, ...config.timerConfig };
+  }
+  finalConfig.orderDelay = Math.max(1, finalConfig.orderDelay);
+  finalConfig.shipmentDelay = Math.max(1, finalConfig.shipmentDelay);
 
   const stages: Record<Role, StageState> = {
     retailer: initializeStage('retailer', finalConfig),
@@ -101,12 +106,27 @@ export function initializeGame(config: Partial<GameConfig> = {}): GameState {
 }
 
 /**
+ * Inventory position = on-hand inventory + inbound shipments - backlog.
+ * Using this avoids over-ordering when there is already stock on the way.
+ */
+export function calculateRecommendedOrder(stage: StageState): number {
+  const targetInventory = 12;
+  const inboundInventory = stage.shipmentPipeline.reduce((sum, qty) => sum + qty, 0);
+  const inventoryPosition = stage.inventory + inboundInventory - stage.backlog;
+  const order = targetInventory + stage.incomingOrders - inventoryPosition;
+
+  if (!Number.isFinite(order)) {
+    return 0;
+  }
+
+  return Math.max(0, Math.round(order));
+}
+
+/**
  * Simple AI ordering policy: order to maintain target inventory
  */
 export function calculateAIOrder(stage: StageState): number {
-  const targetInventory = 12;
-  const order = targetInventory - stage.inventory + stage.backlog + stage.incomingOrders;
-  return Math.max(0, Math.round(order));
+  return calculateRecommendedOrder(stage);
 }
 
 /**
