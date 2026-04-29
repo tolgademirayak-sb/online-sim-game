@@ -1,4 +1,4 @@
-// Beer Game Supply Chain Types
+// Beer Game Supply Chain Types — Shared between server and client
 
 export type Role = 'retailer' | 'wholesaler' | 'distributor' | 'factory';
 
@@ -76,20 +76,6 @@ export interface TimerConfig {
   finalRoundDurationSec: number;
 }
 
-export const ROLE_LABELS: Record<Role, string> = {
-  retailer: 'Retailer',
-  wholesaler: 'Wholesaler',
-  distributor: 'Distributor',
-  factory: 'Factory',
-};
-
-export const ROLE_COLORS: Record<Role, string> = {
-  retailer: 'hsl(var(--primary))',
-  wholesaler: 'hsl(var(--accent))',
-  distributor: 'hsl(var(--chart-shipments))',
-  factory: 'hsl(var(--success))',
-};
-
 export const SUPPLY_CHAIN_ORDER: Role[] = ['retailer', 'wholesaler', 'distributor', 'factory'];
 
 export const DEFAULT_DEMAND_CONFIG: DemandConfig = {
@@ -118,3 +104,86 @@ export const DEFAULT_CONFIG: GameConfig = {
     finalRoundDurationSec: 60,
   },
 };
+
+// --- API response types used by both server and client ---
+
+export interface RoomPlayer {
+  sessionToken: string;
+  name: string;
+  role?: Role;
+  isHost: boolean;
+  isReady: boolean;
+  isConnected: boolean;
+}
+
+export interface RoomStateResponse {
+  roomId: string;
+  label: string | null;
+  players: RoomPlayer[];
+  gameConfig: GameConfig;
+  anonymousMode: boolean;
+  status: RoomStatus;
+  controllerMode: RoomControllerMode;
+  joinPasswordRequired: boolean;
+  timerState: RoundTimerState | null;
+}
+
+export interface RoundTimerState {
+  round: number;
+  durationSeconds: number;
+  startedAtMs: number;
+  endsAtMs: number;
+}
+
+export interface GamePollResponse {
+  currentWeek: number;
+  totalWeeks: number;
+  myStage: StageState;
+  myHistory: WeeklyRecord[];
+  isGameOver: boolean;
+  timer: RoundTimerState | null;
+  submittedRoles: Role[];
+  roundVersion: number;
+}
+
+export interface GameResultsResponse {
+  gameState: GameState;
+  bullwhipRatios: Record<Role, number>;
+}
+
+export interface AdminRoomSummary {
+  id: string;
+  status: RoomStatus;
+  playerCount: number;
+  currentWeek: number;
+  totalWeeks: number;
+  createdAt: string;
+}
+
+export interface AdminStatsResponse {
+  totalRooms: number;
+  activeGames: number;
+  completedGames: number;
+  lobbies: number;
+  totalPlayers: number;
+}
+
+export interface SessionInfoResponse {
+  token: string;
+  playerName: string;
+}
+
+export interface InstructorRoomSummary {
+  roomId: string;
+  label: string | null;
+  status: RoomStatus;
+  controllerMode: RoomControllerMode;
+  playerCount: number;
+  connectedCount: number;
+  currentWeek: number;
+  totalWeeks: number;
+  anonymousMode: boolean;
+  joinPasswordRequired: boolean;
+  createdAt: string;
+  updatedAt: string;
+}

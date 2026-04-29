@@ -1,0 +1,8 @@
+node_modules
+server/node_modules
+dist
+server/dist
+.git
+.claude
+docs/images
+server/data

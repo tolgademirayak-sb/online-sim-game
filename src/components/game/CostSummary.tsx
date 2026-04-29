@@ -33,9 +33,9 @@ export function CostSummary({
 }: CostSummaryProps) {
   const { stages } = gameState;
   const playerRole = viewerRoleOverride || gameState.playerRole;
-  const systemCost = calculateSystemCost(stages);
-  const playerCost = calculateTotalCost(stages[playerRole]);
   const playerStage = stages[playerRole];
+  const systemCost = privateView ? 0 : calculateSystemCost(stages);
+  const playerCost = calculateTotalCost(playerStage);
   const [enteredCost, setEnteredCost] = useState('');
   const isCostLocked = !!pendingCostReview;
 
@@ -103,8 +103,8 @@ export function CostSummary({
             <p className="font-semibold text-primary">${playerCost.toFixed(2)}</p>
           </div>
           <div className="mt-3 flex gap-3 text-xs text-muted-foreground">
-            <span>Inventory Cost: ${playerStage.totalInventoryCost.toFixed(2)}</span>
-            <span>Backlog Cost: ${playerStage.totalBacklogCost.toFixed(2)}</span>
+            <span>Inventory Cost: ${(playerStage?.totalInventoryCost || 0).toFixed(2)}</span>
+            <span>Backlog Cost: ${(playerStage?.totalBacklogCost || 0).toFixed(2)}</span>
           </div>
         </div>
       ) : (
@@ -113,6 +113,7 @@ export function CostSummary({
             const stage = stages[role];
             const totalCost = calculateTotalCost(stage);
             const isPlayer = role === playerRole;
+            if (!stage) return null;
 
             return (
               <div

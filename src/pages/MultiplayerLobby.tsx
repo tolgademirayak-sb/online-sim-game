@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { peerService } from '@/lib/peerService';
+import * as api from '@/lib/apiService';
 import { DEFAULT_CONFIG, DEFAULT_DEMAND_CONFIG, DemandPattern } from '@/types/game';
-import { ArrowLeft, Plus, LogIn, Loader2, Wifi, WifiOff } from 'lucide-react';
+import { ArrowLeft, Plus, LogIn, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 type LobbyMode = 'select' | 'create' | 'join';
@@ -27,14 +27,10 @@ export default function MultiplayerLobby() {
       toast.error('Please enter your name');
       return;
     }
-    if (!password.trim()) {
-      toast.error('Please set a room password');
-      return;
-    }
-
     setIsConnecting(true);
     try {
-      const newRoomId = await peerService.createRoom(password, playerName.trim(), {
+      await api.createSession(playerName.trim());
+      const newRoomId = await api.createRoom(password || undefined, {
         demandPattern,
         demandConfig: {
           ...DEFAULT_DEMAND_CONFIG,
@@ -61,14 +57,10 @@ export default function MultiplayerLobby() {
       toast.error('Please enter a room ID');
       return;
     }
-    if (!password.trim()) {
-      toast.error('Please enter the room password');
-      return;
-    }
-
     setIsConnecting(true);
     try {
-      await peerService.joinRoom(roomId.trim().toUpperCase(), password, playerName.trim());
+      await api.createSession(playerName.trim());
+      await api.joinRoom(roomId.trim().toUpperCase(), password || undefined);
       navigate(`/multiplayer/room/${roomId.trim().toUpperCase()}`, {
         state: { playerName: playerName.trim(), isHost: false },
       });
@@ -89,22 +81,7 @@ export default function MultiplayerLobby() {
 
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold gradient-text">Multiplayer</h1>
-          <p className="text-sm text-muted-foreground">Create or join a game room (P2P — no server needed)</p>
-        </div>
-
-        {/* Connection status indicator */}
-        <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-          {peerService.isConnected ? (
-            <>
-              <Wifi className="h-3 w-3 text-success" />
-              <span className="text-success">Connected</span>
-            </>
-          ) : (
-            <>
-              <WifiOff className="h-3 w-3" />
-              <span>Not connected — will connect on action</span>
-            </>
-          )}
+          <p className="text-sm text-muted-foreground">Create or join a game room</p>
         </div>
 
         {mode === 'select' && (
@@ -159,13 +136,13 @@ export default function MultiplayerLobby() {
               <Input
                 id="create-password"
                 type="password"
-                placeholder="Set a password for your room..."
+                placeholder="Optional password for your room..."
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="bg-secondary border-border"
                 maxLength={32}
               />
-              <p className="text-xs text-muted-foreground">Share this password with your teammates</p>
+              <p className="text-xs text-muted-foreground">Leave blank for a room-ID-only join flow</p>
             </div>
 
             <div className="space-y-3 rounded-lg bg-muted/20 p-4">
@@ -263,7 +240,7 @@ export default function MultiplayerLobby() {
               <Input
                 id="join-password"
                 type="password"
-                placeholder="Enter room password..."
+                placeholder="Only needed if the room uses one..."
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="bg-secondary border-border"
@@ -282,10 +259,8 @@ export default function MultiplayerLobby() {
           </div>
         )}
 
-        {/* Info about P2P */}
         <div className="text-center text-[11px] text-muted-foreground/60">
-          Peer-to-peer connection · No server required
-          <br />The room creator acts as the host
+          Server-hosted game · Game state managed on the server
         </div>
       </div>
     </div>

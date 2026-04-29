@@ -1,0 +1,1 @@
+{"root":["./src/db.ts","./src/index.ts","./src/middleware/admin.ts","./src/middleware/session.ts","./src/routes/admin.ts","./src/routes/game.ts","./src/routes/instructor.ts","./src/routes/rooms.ts","./src/routes/sessions.ts","./src/services/gameservice.ts","./src/services/roomservice.ts"],"version":"5.9.3"}

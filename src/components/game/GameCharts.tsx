@@ -17,7 +17,7 @@ interface GameChartsProps {
 }
 
 export function GameCharts({ history, playerRole, showAllRoles = false }: GameChartsProps) {
-  const playerHistory = history[playerRole];
+  const playerHistory = history[playerRole] || [];
   
   if (playerHistory.length === 0) {
     return (
@@ -32,8 +32,8 @@ export function GameCharts({ history, playerRole, showAllRoles = false }: GameCh
     const dataPoint: Record<string, number> = { week: record.week };
     if (showAllRoles) {
       (['retailer', 'wholesaler', 'distributor', 'factory'] as Role[]).forEach((role) => {
-        dataPoint[`${role}_inventory`] = history[role][index]?.inventory || 0;
-        dataPoint[`${role}_backlog`] = history[role][index]?.backlog || 0;
+        dataPoint[`${role}_inventory`] = history[role]?.[index]?.inventory || 0;
+        dataPoint[`${role}_backlog`] = history[role]?.[index]?.backlog || 0;
       });
     } else {
       dataPoint.inventory = record.inventory;

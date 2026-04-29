@@ -5,10 +5,16 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "dev:client": "vite",
+    "dev:server": "npm --prefix server run dev",
+    "build": "npm run build:client && npm --prefix server run build",
+    "build:client": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "node server/dist/index.js",
+    "start:lan": "node server/dist/index.js",
+    "smoke:lan": "node scripts/lan-smoke.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

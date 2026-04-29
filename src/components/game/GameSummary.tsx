@@ -16,17 +16,19 @@ export function GameSummary({ gameState, onRestart, playerRoleOverride, privateV
   const { stages, totalWeeks, history } = gameState;
   const playerRole = playerRoleOverride || gameState.playerRole;
   const systemCost = calculateSystemCost(stages);
-  const playerCost = calculateTotalCost(stages[playerRole]);
+  const playerStage = stages[playerRole];
+  const playerCost = calculateTotalCost(playerStage);
 
   const rankings = SUPPLY_CHAIN_ORDER.map((role) => ({
     role,
+    stage: stages[role],
     cost: calculateTotalCost(stages[role]),
-  })).sort((a, b) => a.cost - b.cost);
+  })).filter((rank) => !!rank.stage).sort((a, b) => a.cost - b.cost);
 
   const playerRank = rankings.findIndex((rank) => rank.role === playerRole) + 1;
-  const playerHistory = history[playerRole];
-  const maxInventory = Math.max(...playerHistory.map((entry) => entry.inventory));
-  const maxBacklog = Math.max(...playerHistory.map((entry) => entry.backlog));
+  const playerHistory = history[playerRole] || [];
+  const maxInventory = playerHistory.length > 0 ? Math.max(...playerHistory.map((entry) => entry.inventory)) : 0;
+  const maxBacklog = playerHistory.length > 0 ? Math.max(...playerHistory.map((entry) => entry.backlog)) : 0;
   const avgOrder = playerHistory.length > 0
     ? playerHistory.reduce((sum, entry) => sum + entry.orderPlaced, 0) / playerHistory.length
     : 0;
@@ -114,7 +116,7 @@ export function GameSummary({ gameState, onRestart, playerRoleOverride, privateV
               <div className="space-y-3">
                 {rankings.map((rank, index) => {
                   const isPlayer = rank.role === playerRole;
-                  const stage = stages[rank.role];
+                  const stage = rank.stage;
 
                   return (
                     <div

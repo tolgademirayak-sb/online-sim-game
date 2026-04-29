@@ -1,30 +1,32 @@
 import { useState, useEffect } from 'react';
-import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { Role, ROLE_LABELS, GameState, TimerConfig } from '@/types/game';
-import { peerService, RoomState } from '@/lib/peerService';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Role, ROLE_LABELS, TimerConfig } from '@/types/game';
+import * as api from '@/lib/apiService';
+import { useRoomPolling, useGamePolling } from '@/hooks/useGamePolling';
+import type { RoomStateResponse } from '@/lib/apiTypes';
 import { Button } from '@/components/ui/button';
 import { GameSummary } from '@/components/game/GameSummary';
 import { GameCharts } from '@/components/game/GameCharts';
 import { CostSummary } from '@/components/game/CostSummary';
 import { cn } from '@/lib/utils';
-import { Copy, Check, Crown, Loader2, Users, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { Copy, Check, Crown, Loader2, Users, CheckCircle2, Shield } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function MultiplayerRoom() {
   const { roomId } = useParams<{ roomId: string }>();
-  const location = useLocation();
   const navigate = useNavigate();
-  const { playerName, isHost } = (location.state as { playerName: string; isHost: boolean }) || {};
+  const [sessionInfo, setSessionInfo] = useState<{ playerName: string; token: string } | null>(null);
+  const sessionToken = sessionInfo?.token || localStorage.getItem('beer-game-session');
 
-  const [roomState, setRoomState] = useState<RoomState | null>(null);
-  const [myRole, setMyRole] = useState<Role | undefined>();
-  const [isReady, setIsReady] = useState(false);
-  const [gameState, setGameState] = useState<GameState | null>(null);
+  // Polling hooks
+  const { roomState } = useRoomPolling(roomId, 2000);
+  const isGameActive = roomState?.status === 'playing';
+  const { gamePoll } = useGamePolling(isGameActive ? roomId : undefined, 2000);
+
   const [hasSubmittedOrder, setHasSubmittedOrder] = useState(false);
-  const [waitingForOthers, setWaitingForOthers] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [hostDisconnected, setHostDisconnected] = useState(false);
   const [nowMs, setNowMs] = useState(() => Date.now());
+  const [gameOverState, setGameOverState] = useState<any>(null);
   const [costReviews, setCostReviews] = useState<Record<number, {
     week: number;
     enteredCost: number;
@@ -32,145 +34,139 @@ export default function MultiplayerRoom() {
     isCorrect: boolean;
   }>>({});
 
-  const getIsCurrentPlayer = (player: RoomState['players'][number]) => (
-    isHost ? player.isHost : !player.isHost && player.name === playerName
-  );
+  // Find my player in the room
+  const myPlayer = roomState?.players.find(p => p.sessionToken === sessionToken);
+  const myRole = myPlayer?.role as Role | undefined;
+  const amController = !!myPlayer?.isHost;
 
-  const getDisplayName = (player: RoomState['players'][number], index: number) => {
-    if (!roomState?.anonymousMode || isHost) {
-      return player.name;
-    }
-
-    if (getIsCurrentPlayer(player)) {
-      return 'You';
-    }
-
-    return `Player ${index + 1}`;
-  };
-
+  // Detect round change — reset submission flag
   useEffect(() => {
-    if (!roomId || !playerName) {
-      navigate('/multiplayer');
-      return;
+    if (gamePoll) {
+      setHasSubmittedOrder(false);
     }
+  }, [gamePoll?.roundVersion]);
 
-    // Subscribe to messages
-    const unsubs = [
-      peerService.on('ROOM_STATE', (msg) => {
-        setRoomState(msg.payload);
-      }),
-      peerService.on('GAME_STARTED', (msg) => {
-        setGameState(msg.payload.gameState);
-        toast.success('Game started!');
-      }),
-      peerService.on('GAME_STATE', (msg) => {
-        setGameState(msg.payload);
-        setHasSubmittedOrder(false);
-        setWaitingForOthers(false);
-      }),
-      peerService.on('GAME_OVER', (msg) => {
-        setGameState(msg.payload.gameState);
-      }),
-      peerService.on('PLAYER_DISCONNECTED', (msg) => {
-        toast.warning(
-          roomState?.anonymousMode && !isHost
-            ? 'A player disconnected'
-            : `${msg.payload.playerName} disconnected`
-        );
-      }),
-      peerService.on('HOST_DISCONNECTED', () => {
-        setHostDisconnected(true);
-        toast.error('Host disconnected — game over');
-      }),
-      peerService.on('ERROR', (msg) => {
-        toast.error(msg.payload.message);
-      }),
-    ];
-
-    return () => {
-      unsubs.forEach(unsub => unsub());
-    };
-  }, [roomId, playerName, navigate]);
-
-  // Get initial room state on mount (for host, whose ROOM_STATE fires before handlers register)
+  // Timer tick
   useEffect(() => {
-    const initialState = peerService.getCurrentRoomState();
-    if (initialState) {
-      setRoomState(initialState);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!roomState) return;
-
-    const currentPlayer = roomState.players.find((player) => getIsCurrentPlayer(player));
-
-    setMyRole(currentPlayer?.role);
-    setIsReady(!!currentPlayer?.isReady);
-  }, [roomState, isHost, playerName]);
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setNowMs(Date.now());
-    }, 250);
-
+    const timer = window.setInterval(() => setNowMs(Date.now()), 250);
     return () => window.clearInterval(timer);
   }, []);
 
-  // Cleanup on unmount
   useEffect(() => {
-    return () => {
-      // Only cleanup if navigating away (not on re-render)
-    };
-  }, []);
+    api.getCurrentSession().then((session) => {
+      if (!session) {
+        navigate('/multiplayer');
+        return;
+      }
+      setSessionInfo(session);
+    });
+  }, [navigate]);
 
-  const handleReady = () => {
-    if (!roomId) return;
-    peerService.setReady();
-    setIsReady(true);
+  // Navigate away if no session
+  useEffect(() => {
+    if (!roomId) {
+      navigate('/multiplayer');
+    }
+  }, [roomId, navigate]);
+
+  // Fetch full results when game is over
+  useEffect(() => {
+    if (gamePoll?.isGameOver && roomId && !gameOverState) {
+      api.getGameResults(roomId).then(setGameOverState).catch(() => {});
+    }
+  }, [gamePoll?.isGameOver, roomId, gameOverState]);
+
+  const getDisplayName = (player: RoomStateResponse['players'][number], index: number) => {
+    if (!roomState?.anonymousMode || roomState.controllerMode === 'instructor' || amController) {
+      return player.name;
+    }
+    if (player.sessionToken === sessionToken) return 'You';
+    return `Player ${index + 1}`;
   };
 
-  const handleStartGame = () => {
+  const handleReady = async () => {
     if (!roomId) return;
-    peerService.startGame();
+    try {
+      await api.setReady(roomId);
+    } catch (err: any) {
+      toast.error(err.message);
+    }
   };
 
-  const handleSubmitOrder = (quantity: number) => {
-    if (!roomId || !myRole || !gameState) return;
-    peerService.submitOrder(myRole, gameState.currentWeek, quantity);
-    setHasSubmittedOrder(true);
-    setWaitingForOthers(true);
+  const handleStartGame = async () => {
+    if (!roomId) return;
+    try {
+      await api.startGame(roomId);
+      toast.success('Game started!');
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
+
+  const handleSubmitOrder = async (quantity: number) => {
+    if (!roomId) return;
+    try {
+      await api.submitOrder(roomId, quantity);
+      setHasSubmittedOrder(true);
+    } catch (err: any) {
+      toast.error(err.message);
+    }
   };
 
   const handleDraftOrderChange = (quantity: number) => {
-    if (!myRole || !gameState) return;
-    peerService.updateDraftOrder(myRole, quantity);
+    if (!roomId) return;
+    api.updateDraft(roomId, quantity).catch(() => {});
   };
 
   const handleCopyRoomId = () => {
     if (roomId) {
-      navigator.clipboard.writeText(roomId).catch(() => {
-        // Fallback for non-HTTPS
+      if (!navigator.clipboard?.writeText) {
         toast.info(`Room ID: ${roomId}`);
-      });
+      } else {
+        navigator.clipboard.writeText(roomId).catch(() => {
+          toast.info(`Room ID: ${roomId}`);
+        });
+      }
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
   };
 
   const handleLeave = () => {
-    peerService.cleanup();
+    if (roomId) {
+      api.leaveRoom(roomId).catch(() => {});
+    }
     navigate('/');
   };
 
-  const handleHostRoleChange = (playerId: string, role: Role) => {
-    const changed = peerService.assignRole(playerId, role);
-    if (!changed) {
+  const handleHostRoleChange = async (playerToken: string, role: Role) => {
+    if (!roomId) return;
+    try {
+      await api.assignRoles(roomId, { [playerToken]: role });
+    } catch (err: any) {
       toast.error('Could not change role');
     }
   };
 
-  const playerHistory = gameState && myRole ? gameState.history[myRole] : [];
+  const handleAnonymousModeToggle = async (enabled: boolean) => {
+    if (!roomId) return;
+    try {
+      await api.setAnonymousMode(roomId, enabled);
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
+
+  const handleTimerConfigChange = async (field: keyof TimerConfig, value: number) => {
+    if (!roomId) return;
+    try {
+      await api.updateConfig(roomId, { timerConfig: { [field]: value } as any });
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
+
+  const playerHistory = gamePoll?.myHistory || [];
   const latestPlayerRecord = playerHistory[playerHistory.length - 1];
   const pendingCostReview = latestPlayerRecord && latestPlayerRecord.week <= 10 && !costReviews[latestPlayerRecord.week]
     ? latestPlayerRecord
@@ -179,10 +175,8 @@ export default function MultiplayerRoom() {
 
   const handleSubmitCostReview = (enteredCost: number) => {
     if (!pendingCostReview) return;
-
     const trueCost = Number(pendingCostReview.cost.toFixed(2));
     const normalizedEntry = Number(enteredCost.toFixed(2));
-
     setCostReviews((prev) => ({
       ...prev,
       [pendingCostReview.week]: {
@@ -194,22 +188,8 @@ export default function MultiplayerRoom() {
     }));
   };
 
-  const handleAnonymousModeToggle = (enabled: boolean) => {
-    const changed = peerService.setAnonymousMode(enabled);
-    if (!changed) {
-      toast.error('Anonymous mode can only be changed before the game starts');
-    }
-  };
-
-  const handleTimerConfigChange = (field: keyof TimerConfig, value: number) => {
-    const changed = peerService.updateTimerConfig({ [field]: value });
-    if (!changed) {
-      toast.error('Timer settings can only be changed before the game starts');
-    }
-  };
-
-  const timerState = roomState?.timerState;
-  const remainingSeconds = timerState?.isActive
+  const timerState = gamePoll?.timer || roomState?.timerState;
+  const remainingSeconds = timerState
     ? Math.max(0, Math.ceil((timerState.endsAtMs - nowMs) / 1000))
     : null;
   const minutes = remainingSeconds !== null ? Math.floor(remainingSeconds / 60) : 0;
@@ -217,33 +197,11 @@ export default function MultiplayerRoom() {
   const timerLabel = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   const timerConfig = roomState?.gameConfig?.timerConfig;
 
-  // Host disconnected screen
-  if (hostDisconnected) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="w-full max-w-md space-y-6 text-center animate-fade-in">
-          <div className="inline-flex items-center justify-center">
-            <div className="rounded-full bg-destructive/20 p-6">
-              <AlertTriangle className="h-16 w-16 text-destructive" />
-            </div>
-          </div>
-          <h1 className="text-3xl font-bold text-foreground">Host Disconnected</h1>
-          <p className="text-muted-foreground">
-            The host has left the game. The session has ended.
-          </p>
-          <Button onClick={handleLeave} className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-12 px-8">
-            Back to Home
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  // If game is over
-  if (gameState?.isGameOver) {
+  // If game is over and we have full results
+  if (gameOverState?.gameState) {
     return (
       <GameSummary
-        gameState={gameState}
+        gameState={gameOverState.gameState}
         onRestart={handleLeave}
         playerRoleOverride={myRole}
         privateView={true}
@@ -252,8 +210,21 @@ export default function MultiplayerRoom() {
   }
 
   // If game is in progress
-  if (gameState && myRole) {
-    const playerStage = gameState.stages[myRole];
+  if (gamePoll && myRole) {
+    const playerStage = gamePoll.myStage;
+    const waitingForOthers = hasSubmittedOrder;
+
+    if (!playerStage) {
+      return (
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+            <Loader2 className="h-5 w-5 animate-spin text-primary" />
+            Loading your role state...
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="min-h-screen bg-background p-4 md:p-6">
         <div className="max-w-7xl mx-auto space-y-6">
@@ -266,16 +237,16 @@ export default function MultiplayerRoom() {
               <div>
                 <h2 className="text-sm font-bold text-foreground">
                   Room <span className="font-mono text-primary">{roomId}</span>
-                  {isHost && <span className="text-xs text-muted-foreground ml-2">(Host)</span>}
+                  {amController && <span className="text-xs text-muted-foreground ml-2">(Host)</span>}
                 </h2>
                 <p className="text-xs text-muted-foreground">
-                  Week {gameState.currentWeek} of {gameState.totalWeeks} · You are {ROLE_LABELS[myRole]}
+                  Week {gamePoll.currentWeek} of {gamePoll.totalWeeks} · You are {ROLE_LABELS[myRole]}
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              {timerState?.isActive && (
+              {timerState && (
                 <div className="rounded-lg border border-primary/30 bg-primary/10 px-3 py-2 text-right">
                   <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Round Timer</p>
                   <p className="text-lg font-bold text-primary">{timerLabel}</p>
@@ -291,7 +262,7 @@ export default function MultiplayerRoom() {
             </div>
           </div>
 
-          {timerState?.isActive && (
+          {timerState && (
             <div className="glass-card rounded-xl p-4 flex items-center justify-between gap-4">
               <div>
                 <p className="text-sm font-semibold text-foreground">Round {timerState.round} countdown</p>
@@ -306,14 +277,14 @@ export default function MultiplayerRoom() {
             </div>
           )}
 
-          {/* Reuse single-player components */}
+          {/* Game content */}
           <div className="grid lg:grid-cols-3 gap-6">
             <div className="space-y-6">
               <div className="glass-card rounded-xl p-6 space-y-4">
                 <h2 className="text-lg font-semibold text-foreground">Place Your Order</h2>
                 <MultiplayerOrderInput
                   role={myRole}
-                  round={gameState.currentWeek}
+                  round={gamePoll.currentWeek}
                   stage={playerStage}
                   onDraftChange={handleDraftOrderChange}
                   onSubmitOrder={handleSubmitOrder}
@@ -348,7 +319,13 @@ export default function MultiplayerRoom() {
                 </div>
               </div>
               <CostSummary
-                gameState={gameState}
+                gameState={{
+                  currentWeek: gamePoll.currentWeek,
+                  totalWeeks: gamePoll.totalWeeks,
+                  stages: { [myRole]: playerStage } as any,
+                  history: { [myRole]: gamePoll.myHistory } as any,
+                  config: roomState?.gameConfig,
+                } as any}
                 viewerRoleOverride={myRole}
                 privateView={true}
                 pendingCostReview={pendingCostReview}
@@ -359,7 +336,7 @@ export default function MultiplayerRoom() {
             <div className="lg:col-span-2 space-y-6">
               <div className="glass-card rounded-xl p-6">
                 <h3 className="text-lg font-semibold text-foreground mb-4">Private History</h3>
-                <GameCharts history={gameState.history} playerRole={myRole} />
+                <GameCharts history={{ [myRole]: gamePoll.myHistory } as any} playerRole={myRole} />
               </div>
             </div>
           </div>
@@ -371,13 +348,27 @@ export default function MultiplayerRoom() {
   // LOBBY VIEW
   const allReady = roomState?.players?.every(p => p.isReady && p.role) ?? false;
   const playerCount = roomState?.players?.length ?? 0;
+  const isReady = myPlayer?.isReady ?? false;
+  const roomTitle = roomState?.label || 'Game Lobby';
+  const isInstructorManaged = roomState?.controllerMode === 'instructor';
+
+  if (roomState?.status === 'playing') {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+          <Loader2 className="h-5 w-5 animate-spin text-primary" />
+          Loading game...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-xl space-y-6 animate-fade-in">
         {/* Room Header */}
         <div className="text-center space-y-3">
-          <h1 className="text-3xl font-bold text-foreground">Game Lobby</h1>
+          <h1 className="text-3xl font-bold text-foreground">{roomTitle}</h1>
           <div className="flex items-center justify-center gap-2">
             <span className="text-sm text-muted-foreground">Room ID:</span>
             <code className="font-mono text-2xl font-bold text-primary tracking-widest">{roomId}</code>
@@ -385,8 +376,22 @@ export default function MultiplayerRoom() {
               {copied ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4 text-muted-foreground" />}
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground">Share the Room ID and password with your teammates</p>
+          <p className="text-xs text-muted-foreground">
+            Share the Room ID{roomState?.joinPasswordRequired ? ' and password' : ''} with your teammates
+          </p>
         </div>
+
+        {isInstructorManaged && (
+          <div className="glass-card rounded-xl p-4 flex items-center gap-3 border border-primary/30 bg-primary/5">
+            <Shield className="h-5 w-5 text-primary" />
+            <div>
+              <p className="text-sm font-semibold text-foreground">Instructor-managed room</p>
+              <p className="text-xs text-muted-foreground">
+                The instructor controls role overrides, game settings, and when the session starts.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Players */}
         <div className="glass-card rounded-xl p-6 space-y-4">
@@ -397,12 +402,12 @@ export default function MultiplayerRoom() {
 
           <div className="grid grid-cols-2 gap-3">
             {(roomState?.players || []).map((player, index) => (
-              <div key={player.id} className={cn(
+              <div key={player.sessionToken} className={cn(
                 'rounded-lg p-3 border',
                 player.isReady ? 'border-success/50 bg-success/5' : 'border-border bg-muted/30'
               )}>
                 <div className="flex items-center gap-2 mb-1">
-                  {(!roomState?.anonymousMode || isHost) && player.isHost && <Crown className="h-3 w-3 text-primary" />}
+                  {(!roomState?.anonymousMode || amController) && player.isHost && <Crown className="h-3 w-3 text-primary" />}
                   <span className="text-sm font-medium text-foreground">{getDisplayName(player, index)}</span>
                   {player.isReady && <CheckCircle2 className="h-3 w-3 text-success ml-auto" />}
                 </div>
@@ -435,7 +440,7 @@ export default function MultiplayerRoom() {
           </div>
         </div>
 
-        {isHost && !roomState?.isGameStarted && (
+        {amController && roomState?.status === 'lobby' && (
           <div className="glass-card rounded-xl p-6 space-y-4">
             <div className="rounded-lg bg-muted/30 p-4 flex items-center justify-between gap-4">
               <div>
@@ -464,7 +469,7 @@ export default function MultiplayerRoom() {
 
             <div className="space-y-3">
               {(roomState?.players || []).map((player, index) => (
-                <div key={player.id} className="flex items-center justify-between gap-3 rounded-lg bg-muted/30 p-3">
+                <div key={player.sessionToken} className="flex items-center justify-between gap-3 rounded-lg bg-muted/30 p-3">
                   <div>
                     <p className="text-sm font-medium text-foreground">
                       {getDisplayName(player, index)} {player.isHost && '(Host)'}
@@ -476,7 +481,7 @@ export default function MultiplayerRoom() {
 
                   <select
                     value={player.role || ''}
-                    onChange={(e) => handleHostRoleChange(player.id, e.target.value as Role)}
+                    onChange={(e) => handleHostRoleChange(player.sessionToken, e.target.value as Role)}
                     className="h-10 rounded-lg border border-border bg-secondary px-3 text-sm text-foreground"
                   >
                     {(['retailer', 'wholesaler', 'distributor', 'factory'] as Role[]).map((role) => (
@@ -553,10 +558,10 @@ export default function MultiplayerRoom() {
             </div>
           )}
 
-          {isHost && (
+          {amController && (
             <Button
               onClick={handleStartGame}
-              disabled={!allReady || playerCount < 2}
+              disabled={!allReady}
               className="flex-1 gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-12"
             >
               Start Game
@@ -583,7 +588,7 @@ function MultiplayerOrderInput({ role, round, stage, onDraftChange, onSubmitOrde
     const nextQty = Math.max(0, stage.lastOrderPlaced ?? 4);
     setQty(nextQty);
     onDraftChange(nextQty);
-  }, [round, stage.lastOrderPlaced, onDraftChange]);
+  }, [round, stage.lastOrderPlaced]);
 
   const incomingLabel = role === 'retailer' ? 'Customer Demand' : 'Orders In';
   return (

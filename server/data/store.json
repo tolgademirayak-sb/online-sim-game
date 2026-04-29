@@ -1,0 +1,2093 @@
+{
+  "sessions": {
+    "89002f2f-c0b9-4b72-a842-47527f0636b9": {
+      "token": "89002f2f-c0b9-4b72-a842-47527f0636b9",
+      "playerName": "Instructor Test",
+      "createdAt": "2026-04-14T19:50:58.571Z",
+      "lastSeen": "2026-04-14T19:50:58.620Z"
+    },
+    "92aba865-460d-4e2e-9b65-bc60134157a6": {
+      "token": "92aba865-460d-4e2e-9b65-bc60134157a6",
+      "playerName": "LAN Smoke",
+      "createdAt": "2026-04-14T20:53:54.217Z",
+      "lastSeen": "2026-04-14T20:53:54.222Z"
+    },
+    "ec811d57-6106-4a23-9d5d-332586032139": {
+      "token": "ec811d57-6106-4a23-9d5d-332586032139",
+      "playerName": "Instructor Sim",
+      "createdAt": "2026-04-15T04:42:41.411Z",
+      "lastSeen": "2026-04-15T04:42:41.458Z"
+    },
+    "0b0832ff-e053-45f9-97d2-5cded4b20710": {
+      "token": "0b0832ff-e053-45f9-97d2-5cded4b20710",
+      "playerName": "Alice",
+      "createdAt": "2026-04-15T04:42:41.427Z",
+      "lastSeen": "2026-04-15T04:42:41.479Z"
+    },
+    "e5db715e-7641-4a92-88c6-4dd4ce7ea377": {
+      "token": "e5db715e-7641-4a92-88c6-4dd4ce7ea377",
+      "playerName": "Bob",
+      "createdAt": "2026-04-15T04:42:41.435Z",
+      "lastSeen": "2026-04-15T04:42:41.481Z"
+    },
+    "34b18ed6-b252-4d24-bd03-d55990105cb7": {
+      "token": "34b18ed6-b252-4d24-bd03-d55990105cb7",
+      "playerName": "Cem",
+      "createdAt": "2026-04-15T04:42:41.440Z",
+      "lastSeen": "2026-04-15T04:42:41.482Z"
+    },
+    "9098fdb6-9dfc-4b89-b09f-6dc6c7eb526d": {
+      "token": "9098fdb6-9dfc-4b89-b09f-6dc6c7eb526d",
+      "playerName": "kemal",
+      "createdAt": "2026-04-15T06:52:44.186Z",
+      "lastSeen": "2026-04-15T06:53:41.832Z"
+    },
+    "9d067862-74f0-458e-93da-01d9a108af50": {
+      "token": "9d067862-74f0-458e-93da-01d9a108af50",
+      "playerName": "asd",
+      "createdAt": "2026-04-15T06:53:31.267Z",
+      "lastSeen": "2026-04-15T06:53:31.270Z"
+    },
+    "d303a190-699c-4d6e-a99e-0952584b6363": {
+      "token": "d303a190-699c-4d6e-a99e-0952584b6363",
+      "playerName": "asd",
+      "createdAt": "2026-04-15T06:53:42.013Z",
+      "lastSeen": "2026-04-15T06:53:42.019Z"
+    },
+    "816caeba-28db-4267-9425-ea86461160cc": {
+      "token": "816caeba-28db-4267-9425-ea86461160cc",
+      "playerName": "LAN Smoke",
+      "createdAt": "2026-04-22T10:24:29.189Z",
+      "lastSeen": "2026-04-22T10:24:29.209Z"
+    },
+    "9e47ab83-81b8-4eb5-87b8-f67b9c59cd93": {
+      "token": "9e47ab83-81b8-4eb5-87b8-f67b9c59cd93",
+      "playerName": "123123",
+      "createdAt": "2026-04-22T10:53:36.852Z",
+      "lastSeen": "2026-04-22T10:57:45.019Z"
+    },
+    "75f0507b-4bc6-4ec2-a95d-4ba0f2b4780f": {
+      "token": "75f0507b-4bc6-4ec2-a95d-4ba0f2b4780f",
+      "playerName": "beyza",
+      "createdAt": "2026-04-22T10:54:15.835Z",
+      "lastSeen": "2026-04-22T11:03:13.622Z"
+    },
+    "ef70dfd8-4d9a-46d3-954c-e08b56e6c353": {
+      "token": "ef70dfd8-4d9a-46d3-954c-e08b56e6c353",
+      "playerName": "deren",
+      "createdAt": "2026-04-22T10:54:27.780Z",
+      "lastSeen": "2026-04-22T11:03:13.973Z"
+    },
+    "496393b6-f1d1-4bf3-b1a1-f410b6615e9a": {
+      "token": "496393b6-f1d1-4bf3-b1a1-f410b6615e9a",
+      "playerName": "Elif Elmas",
+      "createdAt": "2026-04-22T10:57:01.661Z",
+      "lastSeen": "2026-04-22T10:57:01.679Z"
+    },
+    "57c0b94c-09dd-4f77-848f-41a8db242dcd": {
+      "token": "57c0b94c-09dd-4f77-848f-41a8db242dcd",
+      "playerName": "Elif Elmas",
+      "createdAt": "2026-04-22T10:57:11.328Z",
+      "lastSeen": "2026-04-22T10:57:45.487Z"
+    },
+    "cb7133d6-b3fb-4352-9cfe-6fdcbe0c570d": {
+      "token": "cb7133d6-b3fb-4352-9cfe-6fdcbe0c570d",
+      "playerName": "LAN Smoke",
+      "createdAt": "2026-04-22T11:02:38.516Z",
+      "lastSeen": "2026-04-22T11:02:38.535Z"
+    },
+    "7fbfa474-5fe7-461b-ae14-961daf3220d9": {
+      "token": "7fbfa474-5fe7-461b-ae14-961daf3220d9",
+      "playerName": "elif",
+      "createdAt": "2026-04-22T11:02:58.787Z",
+      "lastSeen": "2026-04-22T11:02:58.801Z"
+    },
+    "e1eab29e-4544-4a5f-ad1c-f0546a8e02c6": {
+      "token": "e1eab29e-4544-4a5f-ad1c-f0546a8e02c6",
+      "playerName": "Kemal",
+      "createdAt": "2026-04-22T11:03:01.692Z",
+      "lastSeen": "2026-04-22T11:03:01.700Z"
+    },
+    "5e46817a-4b91-4efc-8e1d-17b22bd5bf4c": {
+      "token": "5e46817a-4b91-4efc-8e1d-17b22bd5bf4c",
+      "playerName": "Kemal",
+      "createdAt": "2026-04-22T11:03:02.987Z",
+      "lastSeen": "2026-04-22T11:03:02.996Z"
+    },
+    "59183b07-897d-4024-a83b-f328b4e7c4ed": {
+      "token": "59183b07-897d-4024-a83b-f328b4e7c4ed",
+      "playerName": "elif",
+      "createdAt": "2026-04-22T11:03:03.315Z",
+      "lastSeen": "2026-04-22T11:03:03.334Z"
+    },
+    "95281dbd-fb35-4f54-a59f-9837c6b0ba07": {
+      "token": "95281dbd-fb35-4f54-a59f-9837c6b0ba07",
+      "playerName": "elif",
+      "createdAt": "2026-04-22T11:03:03.925Z",
+      "lastSeen": "2026-04-22T11:03:03.940Z"
+    },
+    "8fd9781f-0765-422b-b720-617ef0d9bebc": {
+      "token": "8fd9781f-0765-422b-b720-617ef0d9bebc",
+      "playerName": "elif",
+      "createdAt": "2026-04-22T11:03:04.568Z",
+      "lastSeen": "2026-04-22T11:03:04.583Z"
+    },
+    "79ca72fc-4c6c-4977-bd1a-6af9a754c573": {
+      "token": "79ca72fc-4c6c-4977-bd1a-6af9a754c573",
+      "playerName": "123123",
+      "createdAt": "2026-04-22T11:03:08.710Z",
+      "lastSeen": "2026-04-22T11:03:08.719Z"
+    },
+    "c97a4578-9ccc-4ce4-8c20-20b7faa246a9": {
+      "token": "c97a4578-9ccc-4ce4-8c20-20b7faa246a9",
+      "playerName": "Kemal",
+      "createdAt": "2026-04-22T11:03:15.967Z",
+      "lastSeen": "2026-04-22T11:07:00.146Z"
+    },
+    "97c5af04-95de-4cc2-a7f0-88bb102b6a48": {
+      "token": "97c5af04-95de-4cc2-a7f0-88bb102b6a48",
+      "playerName": "beyza",
+      "createdAt": "2026-04-22T11:03:36.097Z",
+      "lastSeen": "2026-04-22T11:06:32.165Z"
+    },
+    "df6a41b1-c518-4846-b1c5-122bb321512f": {
+      "token": "df6a41b1-c518-4846-b1c5-122bb321512f",
+      "playerName": "Elif",
+      "createdAt": "2026-04-22T11:03:45.131Z",
+      "lastSeen": "2026-04-22T11:06:59.383Z"
+    },
+    "a5e345fb-1abf-40b8-af98-a59c77bc45b5": {
+      "token": "a5e345fb-1abf-40b8-af98-a59c77bc45b5",
+      "playerName": "deren",
+      "createdAt": "2026-04-22T11:03:52.146Z",
+      "lastSeen": "2026-04-22T11:06:32.524Z"
+    }
+  },
+  "rooms": {
+    "KG6LHZ": {
+      "id": "KG6LHZ",
+      "passwordHash": null,
+      "hostToken": "89002f2f-c0b9-4b72-a842-47527f0636b9",
+      "label": "Team 1",
+      "controllerMode": "instructor",
+      "gameConfig": {
+        "totalWeeks": 12,
+        "playerRole": "retailer",
+        "demandPattern": "spike",
+        "demandConfig": {
+          "baseDemand": 4,
+          "spikeWeek": 4,
+          "spikeAmount": 9,
+          "randomMin": 2,
+          "randomMax": 8
+        },
+        "initialInventory": 12,
+        "inventoryCostPerUnit": 0.5,
+        "backlogCostPerUnit": 1,
+        "orderDelay": 2,
+        "shipmentDelay": 2,
+        "timerConfig": {
+          "earlyRounds": 3,
+          "finalRounds": 5,
+          "earlyRoundDurationSec": 180,
+          "middleRoundDurationSec": 120,
+          "finalRoundDurationSec": 60
+        }
+      },
+      "anonymousMode": false,
+      "status": "lobby",
+      "createdAt": "2026-04-14T19:50:58.620Z",
+      "updatedAt": "2026-04-14T19:50:58.620Z"
+    },
+    "H4YP63": {
+      "id": "H4YP63",
+      "passwordHash": null,
+      "hostToken": "89002f2f-c0b9-4b72-a842-47527f0636b9",
+      "label": "Team 2",
+      "controllerMode": "instructor",
+      "gameConfig": {
+        "totalWeeks": 12,
+        "playerRole": "retailer",
+        "demandPattern": "spike",
+        "demandConfig": {
+          "baseDemand": 4,
+          "spikeWeek": 4,
+          "spikeAmount": 9,
+          "randomMin": 2,
+          "randomMax": 8
+        },
+        "initialInventory": 12,
+        "inventoryCostPerUnit": 0.5,
+        "backlogCostPerUnit": 1,
+        "orderDelay": 2,
+        "shipmentDelay": 2,
+        "timerConfig": {
+          "earlyRounds": 3,
+          "finalRounds": 5,
+          "earlyRoundDurationSec": 180,
+          "middleRoundDurationSec": 120,
+          "finalRoundDurationSec": 60
+        }
+      },
+      "anonymousMode": false,
+      "status": "lobby",
+      "createdAt": "2026-04-14T19:50:58.621Z",
+      "updatedAt": "2026-04-14T19:50:58.621Z"
+    },
+    "DADVC3": {
+      "id": "DADVC3",
+      "passwordHash": null,
+      "hostToken": "92aba865-460d-4e2e-9b65-bc60134157a6",
+      "label": "Smoke Team 1",
+      "controllerMode": "instructor",
+      "gameConfig": {
+        "totalWeeks": 8,
+        "playerRole": "retailer",
+        "demandPattern": "spike",
+        "demandConfig": {
+          "baseDemand": 4,
+          "spikeWeek": 4,
+          "spikeAmount": 8,
+          "randomMin": 2,
+          "randomMax": 8
+        },
+        "initialInventory": 12,
+        "inventoryCostPerUnit": 0.5,
+        "backlogCostPerUnit": 1,
+        "orderDelay": 2,
+        "shipmentDelay": 2,
+        "timerConfig": {
+          "earlyRounds": 3,
+          "finalRounds": 5,
+          "earlyRoundDurationSec": 180,
+          "middleRoundDurationSec": 120,
+          "finalRoundDurationSec": 60
+        }
+      },
+      "anonymousMode": false,
+      "status": "lobby",
+      "createdAt": "2026-04-14T20:53:54.222Z",
+      "updatedAt": "2026-04-14T20:53:54.222Z"
+    },
+    "XM9T9A": {
+      "id": "XM9T9A",
+      "passwordHash": null,
+      "hostToken": "92aba865-460d-4e2e-9b65-bc60134157a6",
+      "label": "Smoke Team 2",
+      "controllerMode": "instructor",
+      "gameConfig": {
+        "totalWeeks": 8,
+        "playerRole": "retailer",
+        "demandPattern": "spike",
+        "demandConfig": {
+          "baseDemand": 4,
+          "spikeWeek": 4,
+          "spikeAmount": 8,
+          "randomMin": 2,
+          "randomMax": 8
+        },
+        "initialInventory": 12,
+        "inventoryCostPerUnit": 0.5,
+        "backlogCostPerUnit": 1,
+        "orderDelay": 2,
+        "shipmentDelay": 2,
+        "timerConfig": {
+          "earlyRounds": 3,
+          "finalRounds": 5,
+          "earlyRoundDurationSec": 180,
+          "middleRoundDurationSec": 120,
+          "finalRoundDurationSec": 60
+        }
+      },
+      "anonymousMode": false,
+      "status": "lobby",
+      "createdAt": "2026-04-14T20:53:54.223Z",
+      "updatedAt": "2026-04-14T20:53:54.223Z"
+    },
+    "GQPXF8": {
+      "id": "GQPXF8",
+      "passwordHash": null,
+      "hostToken": "ec811d57-6106-4a23-9d5d-332586032139",
+      "label": "Sim Room",
+      "controllerMode": "instructor",
+      "gameConfig": {
+        "totalWeeks": 6,
+        "playerRole": "retailer",
+        "demandPattern": "spike",
+        "demandConfig": {
+          "baseDemand": 4,
+          "spikeWeek": 3,
+          "spikeAmount": 8,
+          "randomMin": 2,
+          "randomMax": 8
+        },
+        "initialInventory": 12,
+        "inventoryCostPerUnit": 0.5,
+        "backlogCostPerUnit": 1,
+        "orderDelay": 2,
+        "shipmentDelay": 2,
+        "timerConfig": {
+          "earlyRounds": 3,
+          "finalRounds": 5,
+          "earlyRoundDurationSec": 180,
+          "middleRoundDurationSec": 120,
+          "finalRoundDurationSec": 60
+        }
+      },
+      "anonymousMode": false,
+      "status": "finished",
+      "createdAt": "2026-04-15T04:42:41.424Z",
+      "updatedAt": "2026-04-15T06:45:57.813Z"
+    },
+    "YGNG8T": {
+      "id": "YGNG8T",
+      "passwordHash": null,
+      "hostToken": "9098fdb6-9dfc-4b89-b09f-6dc6c7eb526d",
+      "label": "Team 1",
+      "controllerMode": "instructor",
+      "gameConfig": {
+        "totalWeeks": 35,
+        "playerRole": "retailer",
+        "demandPattern": "constant",
+        "demandConfig": {
+          "baseDemand": 4,
+          "spikeWeek": 5,
+          "spikeAmount": 8,
+          "randomMin": 2,
+          "randomMax": 8
+        },
+        "initialInventory": 12,
+        "inventoryCostPerUnit": 0.5,
+        "backlogCostPerUnit": 1,
+        "orderDelay": 2,
+        "shipmentDelay": 2,
+        "timerConfig": {
+          "earlyRounds": 3,
+          "finalRounds": 5,
+          "earlyRoundDurationSec": 180,
+          "middleRoundDurationSec": 120,
+          "finalRoundDurationSec": 60
+        }
+      },
+      "anonymousMode": false,
+      "status": "lobby",
+      "createdAt": "2026-04-15T06:53:08.456Z",
+      "updatedAt": "2026-04-15T06:53:08.456Z"
+    },
+    "SGBUWV": {
+      "id": "SGBUWV",
+      "passwordHash": null,
+      "hostToken": "9098fdb6-9dfc-4b89-b09f-6dc6c7eb526d",
+      "label": "Team 2",
+      "controllerMode": "instructor",
+      "gameConfig": {
+        "totalWeeks": 35,
+        "playerRole": "retailer",
+        "demandPattern": "constant",
+        "demandConfig": {
+          "baseDemand": 4,
+          "spikeWeek": 5,
+          "spikeAmount": 8,
+          "randomMin": 2,
+          "randomMax": 8
+        },
+        "initialInventory": 12,
+        "inventoryCostPerUnit": 0.5,
+        "backlogCostPerUnit": 1,
+        "orderDelay": 2,
+        "shipmentDelay": 2,
+        "timerConfig": {
+          "earlyRounds": 3,
+          "finalRounds": 5,
+          "earlyRoundDurationSec": 180,
+          "middleRoundDurationSec": 120,
+          "finalRoundDurationSec": 60
+        }
+      },
+      "anonymousMode": false,
+      "status": "lobby",
+      "createdAt": "2026-04-15T06:53:08.457Z",
+      "updatedAt": "2026-04-15T06:53:08.457Z"
+    },
+    "MNQYQT": {
+      "id": "MNQYQT",
+      "passwordHash": null,
+      "hostToken": "9098fdb6-9dfc-4b89-b09f-6dc6c7eb526d",
+      "label": "Team 3",
+      "controllerMode": "instructor",
+      "gameConfig": {
+        "totalWeeks": 35,
+        "playerRole": "retailer",
+        "demandPattern": "constant",
+        "demandConfig": {
+          "baseDemand": 4,
+          "spikeWeek": 5,
+          "spikeAmount": 8,
+          "randomMin": 2,
+          "randomMax": 8
+        },
+        "initialInventory": 12,
+        "inventoryCostPerUnit": 0.5,
+        "backlogCostPerUnit": 1,
+        "orderDelay": 2,
+        "shipmentDelay": 2,
+        "timerConfig": {
+          "earlyRounds": 3,
+          "finalRounds": 5,
+          "earlyRoundDurationSec": 180,
+          "middleRoundDurationSec": 120,
+          "finalRoundDurationSec": 60
+        }
+      },
+      "anonymousMode": false,
+      "status": "lobby",
+      "createdAt": "2026-04-15T06:53:08.458Z",
+      "updatedAt": "2026-04-15T06:53:08.458Z"
+    },
+    "UXPRTH": {
+      "id": "UXPRTH",
+      "passwordHash": null,
+      "hostToken": "9098fdb6-9dfc-4b89-b09f-6dc6c7eb526d",
+      "label": "Team 4",
+      "controllerMode": "instructor",
+      "gameConfig": {
+        "totalWeeks": 35,
+        "playerRole": "retailer",
+        "demandPattern": "constant",
+        "demandConfig": {
+          "baseDemand": 4,
+          "spikeWeek": 5,
+          "spikeAmount": 8,
+          "randomMin": 2,
+          "randomMax": 8
+        },
+        "initialInventory": 12,
+        "inventoryCostPerUnit": 0.5,
+        "backlogCostPerUnit": 1,
+        "orderDelay": 2,
+        "shipmentDelay": 2,
+        "timerConfig": {
+          "earlyRounds": 3,
+          "finalRounds": 5,
+          "earlyRoundDurationSec": 180,
+          "middleRoundDurationSec": 120,
+          "finalRoundDurationSec": 60
+        }
+      },
+      "anonymousMode": false,
+      "status": "lobby",
+      "createdAt": "2026-04-15T06:53:08.459Z",
+      "updatedAt": "2026-04-15T06:53:08.459Z"
+    },
+    "F62Q6V": {
+      "id": "F62Q6V",
+      "passwordHash": null,
+      "hostToken": "9098fdb6-9dfc-4b89-b09f-6dc6c7eb526d",
+      "label": "Team 1",
+      "controllerMode": "instructor",
+      "gameConfig": {
+        "totalWeeks": 35,
+        "playerRole": "retailer",
+        "demandPattern": "constant",
+        "demandConfig": {
+          "baseDemand": 4,
+          "spikeWeek": 5,
+          "spikeAmount": 8,
+          "randomMin": 2,
+          "randomMax": 8
+        },
+        "initialInventory": 12,
+        "inventoryCostPerUnit": 0.5,
+        "backlogCostPerUnit": 1,
+        "orderDelay": 2,
+        "shipmentDelay": 2,
+        "timerConfig": {
+          "earlyRounds": 3,
+          "finalRounds": 5,
+          "earlyRoundDurationSec": 180,
+          "middleRoundDurationSec": 120,
+          "finalRoundDurationSec": 60
+        }
+      },
+      "anonymousMode": false,
+      "status": "lobby",
+      "createdAt": "2026-04-15T06:53:10.499Z",
+      "updatedAt": "2026-04-15T06:53:10.499Z"
+    },
+    "GYSVD7": {
+      "id": "GYSVD7",
+      "passwordHash": null,
+      "hostToken": "9098fdb6-9dfc-4b89-b09f-6dc6c7eb526d",
+      "label": "Team 2",
+      "controllerMode": "instructor",
+      "gameConfig": {
+        "totalWeeks": 35,
+        "playerRole": "retailer",
+        "demandPattern": "constant",
+        "demandConfig": {
+          "baseDemand": 4,
+          "spikeWeek": 5,
+          "spikeAmount": 8,
+          "randomMin": 2,
+          "randomMax": 8
+        },
+        "initialInventory": 12,
+        "inventoryCostPerUnit": 0.5,
+        "backlogCostPerUnit": 1,
+        "orderDelay": 2,
+        "shipmentDelay": 2,
+        "timerConfig": {
+          "earlyRounds": 3,
+          "finalRounds": 5,
+          "earlyRoundDurationSec": 180,
+          "middleRoundDurationSec": 120,
+          "finalRoundDurationSec": 60
+        }
+      },
+      "anonymousMode": false,
+      "status": "lobby",
+      "createdAt": "2026-04-15T06:53:10.503Z",
+      "updatedAt": "2026-04-15T06:53:10.503Z"
+    },
+    "2QGRWV": {
+      "id": "2QGRWV",
+      "passwordHash": null,
+      "hostToken": "9098fdb6-9dfc-4b89-b09f-6dc6c7eb526d",
+      "label": "Team 3",
+      "controllerMode": "instructor",
+      "gameConfig": {
+        "totalWeeks": 35,
+        "playerRole": "retailer",
+        "demandPattern": "constant",
+        "demandConfig": {
+          "baseDemand": 4,
+          "spikeWeek": 5,
+          "spikeAmount": 8,
+          "randomMin": 2,
+          "randomMax": 8
+        },
+        "initialInventory": 12,
+        "inventoryCostPerUnit": 0.5,
+        "backlogCostPerUnit": 1,
+        "orderDelay": 2,
+        "shipmentDelay": 2,
+        "timerConfig": {
+          "earlyRounds": 3,
+          "finalRounds": 5,
+          "earlyRoundDurationSec": 180,
+          "middleRoundDurationSec": 120,
+          "finalRoundDurationSec": 60
+        }
+      },
+      "anonymousMode": false,
+      "status": "lobby",
+      "createdAt": "2026-04-15T06:53:10.503Z",
+      "updatedAt": "2026-04-15T06:53:10.503Z"
+    },
+    "VCF2GW": {
+      "id": "VCF2GW",
+      "passwordHash": null,
+      "hostToken": "9098fdb6-9dfc-4b89-b09f-6dc6c7eb526d",
+      "label": "Team 4",
+      "controllerMode": "instructor",
+      "gameConfig": {
+        "totalWeeks": 35,
+        "playerRole": "retailer",
+        "demandPattern": "constant",
+        "demandConfig": {
+          "baseDemand": 4,
+          "spikeWeek": 5,
+          "spikeAmount": 8,
+          "randomMin": 2,
+          "randomMax": 8
+        },
+        "initialInventory": 12,
+        "inventoryCostPerUnit": 0.5,
+        "backlogCostPerUnit": 1,
+        "orderDelay": 2,
+        "shipmentDelay": 2,
+        "timerConfig": {
+          "earlyRounds": 3,
+          "finalRounds": 5,
+          "earlyRoundDurationSec": 180,
+          "middleRoundDurationSec": 120,
+          "finalRoundDurationSec": 60
+        }
+      },
+      "anonymousMode": false,
+      "status": "lobby",
+      "createdAt": "2026-04-15T06:53:10.504Z",
+      "updatedAt": "2026-04-15T06:53:10.504Z"
+    },
+    "RZPANV": {
+      "id": "RZPANV",
+      "passwordHash": null,
+      "hostToken": "9098fdb6-9dfc-4b89-b09f-6dc6c7eb526d",
+      "label": "Team 1",
+      "controllerMode": "instructor",
+      "gameConfig": {
+        "totalWeeks": 35,
+        "playerRole": "retailer",
+        "demandPattern": "constant",
+        "demandConfig": {
+          "baseDemand": 4,
+          "spikeWeek": 5,
+          "spikeAmount": 8,
+          "randomMin": 2,
+          "randomMax": 8
+        },
+        "initialInventory": 12,
+        "inventoryCostPerUnit": 0.5,
+        "backlogCostPerUnit": 1,
+        "orderDelay": 2,
+        "shipmentDelay": 2,
+        "timerConfig": {
+          "earlyRounds": 3,
+          "finalRounds": 5,
+          "earlyRoundDurationSec": 180,
+          "middleRoundDurationSec": 120,
+          "finalRoundDurationSec": 60
+        }
+      },
+      "anonymousMode": false,
+      "status": "lobby",
+      "createdAt": "2026-04-15T06:53:19.091Z",
+      "updatedAt": "2026-04-15T06:53:19.091Z"
+    },
+    "TG34W7": {
+      "id": "TG34W7",
+      "passwordHash": null,
+      "hostToken": "9098fdb6-9dfc-4b89-b09f-6dc6c7eb526d",
+      "label": "Team 2",
+      "controllerMode": "instructor",
+      "gameConfig": {
+        "totalWeeks": 35,
+        "playerRole": "retailer",
+        "demandPattern": "constant",
+        "demandConfig": {
+          "baseDemand": 4,
+          "spikeWeek": 5,
+          "spikeAmount": 8,
+          "randomMin": 2,
+          "randomMax": 8
+        },
+        "initialInventory": 12,
+        "inventoryCostPerUnit": 0.5,
+        "backlogCostPerUnit": 1,
+        "orderDelay": 2,
+        "shipmentDelay": 2,
+        "timerConfig": {
+          "earlyRounds": 3,
+          "finalRounds": 5,
+          "earlyRoundDurationSec": 180,
+          "middleRoundDurationSec": 120,
+          "finalRoundDurationSec": 60
+        }
+      },
+      "anonymousMode": false,
+      "status": "lobby",
+      "createdAt": "2026-04-15T06:53:19.092Z",
+      "updatedAt": "2026-04-15T06:53:19.092Z"
+    },
+    "D9N7BB": {
+      "id": "D9N7BB",
+      "passwordHash": null,
+      "hostToken": "9098fdb6-9dfc-4b89-b09f-6dc6c7eb526d",
+      "label": "Team 3",
+      "controllerMode": "instructor",
+      "gameConfig": {
+        "totalWeeks": 35,
+        "playerRole": "retailer",
+        "demandPattern": "constant",
+        "demandConfig": {
+          "baseDemand": 4,
+          "spikeWeek": 5,
+          "spikeAmount": 8,
+          "randomMin": 2,
+          "randomMax": 8
+        },
+        "initialInventory": 12,
+        "inventoryCostPerUnit": 0.5,
+        "backlogCostPerUnit": 1,
+        "orderDelay": 2,
+        "shipmentDelay": 2,
+        "timerConfig": {
+          "earlyRounds": 3,
+          "finalRounds": 5,
+          "earlyRoundDurationSec": 180,
+          "middleRoundDurationSec": 120,
+          "finalRoundDurationSec": 60
+        }
+      },
+      "anonymousMode": false,
+      "status": "lobby",
+      "createdAt": "2026-04-15T06:53:19.093Z",
+      "updatedAt": "2026-04-15T06:53:19.093Z"
+    },
+    "QXFMHU": {
+      "id": "QXFMHU",
+      "passwordHash": null,
+      "hostToken": "9098fdb6-9dfc-4b89-b09f-6dc6c7eb526d",
+      "label": "Team 4",
+      "controllerMode": "instructor",
+      "gameConfig": {
+        "totalWeeks": 35,
+        "playerRole": "retailer",
+        "demandPattern": "constant",
+        "demandConfig": {
+          "baseDemand": 4,
+          "spikeWeek": 5,
+          "spikeAmount": 8,
+          "randomMin": 2,
+          "randomMax": 8
+        },
+        "initialInventory": 12,
+        "inventoryCostPerUnit": 0.5,
+        "backlogCostPerUnit": 1,
+        "orderDelay": 2,
+        "shipmentDelay": 2,
+        "timerConfig": {
+          "earlyRounds": 3,
+          "finalRounds": 5,
+          "earlyRoundDurationSec": 180,
+          "middleRoundDurationSec": 120,
+          "finalRoundDurationSec": 60
+        }
+      },
+      "anonymousMode": false,
+      "status": "lobby",
+      "createdAt": "2026-04-15T06:53:19.094Z",
+      "updatedAt": "2026-04-15T06:53:19.094Z"
+    },
+    "BKLMA3": {
+      "id": "BKLMA3",
+      "passwordHash": null,
+      "hostToken": "816caeba-28db-4267-9425-ea86461160cc",
+      "label": "Smoke Team 1",
+      "controllerMode": "instructor",
+      "gameConfig": {
+        "totalWeeks": 8,
+        "playerRole": "retailer",
+        "demandPattern": "spike",
+        "demandConfig": {
+          "baseDemand": 4,
+          "spikeWeek": 4,
+          "spikeAmount": 8,
+          "randomMin": 2,
+          "randomMax": 8
+        },
+        "initialInventory": 12,
+        "inventoryCostPerUnit": 0.5,
+        "backlogCostPerUnit": 1,
+        "orderDelay": 2,
+        "shipmentDelay": 2,
+        "timerConfig": {
+          "earlyRounds": 3,
+          "finalRounds": 5,
+          "earlyRoundDurationSec": 180,
+          "middleRoundDurationSec": 120,
+          "finalRoundDurationSec": 60
+        }
+      },
+      "anonymousMode": false,
+      "status": "lobby",
+      "createdAt": "2026-04-22T10:24:29.193Z",
+      "updatedAt": "2026-04-22T10:24:29.193Z"
+    },
+    "NYC3SC": {
+      "id": "NYC3SC",
+      "passwordHash": null,
+      "hostToken": "816caeba-28db-4267-9425-ea86461160cc",
+      "label": "Smoke Team 2",
+      "controllerMode": "instructor",
+      "gameConfig": {
+        "totalWeeks": 8,
+        "playerRole": "retailer",
+        "demandPattern": "spike",
+        "demandConfig": {
+          "baseDemand": 4,
+          "spikeWeek": 4,
+          "spikeAmount": 8,
+          "randomMin": 2,
+          "randomMax": 8
+        },
+        "initialInventory": 12,
+        "inventoryCostPerUnit": 0.5,
+        "backlogCostPerUnit": 1,
+        "orderDelay": 2,
+        "shipmentDelay": 2,
+        "timerConfig": {
+          "earlyRounds": 3,
+          "finalRounds": 5,
+          "earlyRoundDurationSec": 180,
+          "middleRoundDurationSec": 120,
+          "finalRoundDurationSec": 60
+        }
+      },
+      "anonymousMode": false,
+      "status": "lobby",
+      "createdAt": "2026-04-22T10:24:29.206Z",
+      "updatedAt": "2026-04-22T10:24:29.206Z"
+    },
+    "255VYC": {
+      "id": "255VYC",
+      "passwordHash": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+      "hostToken": "9e47ab83-81b8-4eb5-87b8-f67b9c59cd93",
+      "label": null,
+      "controllerMode": "player",
+      "gameConfig": {
+        "totalWeeks": 35,
+        "playerRole": "retailer",
+        "demandPattern": "constant",
+        "demandConfig": {
+          "baseDemand": 4,
+          "spikeWeek": 5,
+          "spikeAmount": 8,
+          "randomMin": 2,
+          "randomMax": 8
+        },
+        "initialInventory": 12,
+        "inventoryCostPerUnit": 0.5,
+        "backlogCostPerUnit": 1,
+        "orderDelay": 2,
+        "shipmentDelay": 2,
+        "timerConfig": {
+          "earlyRounds": 3,
+          "finalRounds": 5,
+          "earlyRoundDurationSec": 180,
+          "middleRoundDurationSec": 120,
+          "finalRoundDurationSec": 60
+        }
+      },
+      "anonymousMode": true,
+      "status": "playing",
+      "createdAt": "2026-04-22T10:53:36.932Z",
+      "updatedAt": "2026-04-22T10:57:43.995Z"
+    },
+    "ET67J8": {
+      "id": "ET67J8",
+      "passwordHash": null,
+      "hostToken": "cb7133d6-b3fb-4352-9cfe-6fdcbe0c570d",
+      "label": "Smoke Team 1",
+      "controllerMode": "instructor",
+      "gameConfig": {
+        "totalWeeks": 8,
+        "playerRole": "retailer",
+        "demandPattern": "spike",
+        "demandConfig": {
+          "baseDemand": 4,
+          "spikeWeek": 4,
+          "spikeAmount": 8,
+          "randomMin": 2,
+          "randomMax": 8
+        },
+        "initialInventory": 12,
+        "inventoryCostPerUnit": 0.5,
+        "backlogCostPerUnit": 1,
+        "orderDelay": 2,
+        "shipmentDelay": 2,
+        "timerConfig": {
+          "earlyRounds": 3,
+          "finalRounds": 5,
+          "earlyRoundDurationSec": 180,
+          "middleRoundDurationSec": 120,
+          "finalRoundDurationSec": 60
+        }
+      },
+      "anonymousMode": false,
+      "status": "lobby",
+      "createdAt": "2026-04-22T11:02:38.526Z",
+      "updatedAt": "2026-04-22T11:02:38.526Z"
+    },
+    "WGD9MU": {
+      "id": "WGD9MU",
+      "passwordHash": null,
+      "hostToken": "cb7133d6-b3fb-4352-9cfe-6fdcbe0c570d",
+      "label": "Smoke Team 2",
+      "controllerMode": "instructor",
+      "gameConfig": {
+        "totalWeeks": 8,
+        "playerRole": "retailer",
+        "demandPattern": "spike",
+        "demandConfig": {
+          "baseDemand": 4,
+          "spikeWeek": 4,
+          "spikeAmount": 8,
+          "randomMin": 2,
+          "randomMax": 8
+        },
+        "initialInventory": 12,
+        "inventoryCostPerUnit": 0.5,
+        "backlogCostPerUnit": 1,
+        "orderDelay": 2,
+        "shipmentDelay": 2,
+        "timerConfig": {
+          "earlyRounds": 3,
+          "finalRounds": 5,
+          "earlyRoundDurationSec": 180,
+          "middleRoundDurationSec": 120,
+          "finalRoundDurationSec": 60
+        }
+      },
+      "anonymousMode": false,
+      "status": "lobby",
+      "createdAt": "2026-04-22T11:02:38.530Z",
+      "updatedAt": "2026-04-22T11:02:38.530Z"
+    },
+    "YTGQ93": {
+      "id": "YTGQ93",
+      "passwordHash": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+      "hostToken": "c97a4578-9ccc-4ce4-8c20-20b7faa246a9",
+      "label": null,
+      "controllerMode": "player",
+      "gameConfig": {
+        "totalWeeks": 35,
+        "playerRole": "retailer",
+        "demandPattern": "constant",
+        "demandConfig": {
+          "baseDemand": 4,
+          "spikeWeek": 5,
+          "spikeAmount": 8,
+          "randomMin": 2,
+          "randomMax": 8
+        },
+        "initialInventory": 12,
+        "inventoryCostPerUnit": 0.5,
+        "backlogCostPerUnit": 1,
+        "orderDelay": 2,
+        "shipmentDelay": 2,
+        "timerConfig": {
+          "earlyRounds": 3,
+          "finalRounds": 5,
+          "earlyRoundDurationSec": 180,
+          "middleRoundDurationSec": 120,
+          "finalRoundDurationSec": 60
+        }
+      },
+      "anonymousMode": true,
+      "status": "playing",
+      "createdAt": "2026-04-22T11:03:15.981Z",
+      "updatedAt": "2026-04-22T11:04:04.744Z"
+    }
+  },
+  "roomPlayers": [
+    {
+      "roomId": "GQPXF8",
+      "sessionToken": "0b0832ff-e053-45f9-97d2-5cded4b20710",
+      "role": "retailer",
+      "isHost": false,
+      "isReady": true,
+      "isConnected": false,
+      "joinedAt": "2026-04-15T04:42:41.431Z",
+      "lastPoll": "2026-04-15T04:42:41.476Z"
+    },
+    {
+      "roomId": "GQPXF8",
+      "sessionToken": "e5db715e-7641-4a92-88c6-4dd4ce7ea377",
+      "role": "wholesaler",
+      "isHost": false,
+      "isReady": true,
+      "isConnected": false,
+      "joinedAt": "2026-04-15T04:42:41.438Z",
+      "lastPoll": "2026-04-15T04:42:41.477Z"
+    },
+    {
+      "roomId": "GQPXF8",
+      "sessionToken": "34b18ed6-b252-4d24-bd03-d55990105cb7",
+      "role": "distributor",
+      "isHost": false,
+      "isReady": true,
+      "isConnected": false,
+      "joinedAt": "2026-04-15T04:42:41.443Z",
+      "lastPoll": "2026-04-15T04:42:41.478Z"
+    },
+    {
+      "roomId": "RZPANV",
+      "sessionToken": "d303a190-699c-4d6e-a99e-0952584b6363",
+      "role": "distributor",
+      "isHost": false,
+      "isReady": false,
+      "isConnected": true,
+      "joinedAt": "2026-04-15T06:53:42.019Z",
+      "lastPoll": "2026-04-15T06:53:42.019Z"
+    },
+    {
+      "roomId": "255VYC",
+      "sessionToken": "9e47ab83-81b8-4eb5-87b8-f67b9c59cd93",
+      "role": "distributor",
+      "isHost": true,
+      "isReady": true,
+      "isConnected": false,
+      "joinedAt": "2026-04-22T10:53:36.932Z",
+      "lastPoll": "2026-04-22T10:57:45.020Z"
+    },
+    {
+      "roomId": "255VYC",
+      "sessionToken": "75f0507b-4bc6-4ec2-a95d-4ba0f2b4780f",
+      "role": "factory",
+      "isHost": false,
+      "isReady": true,
+      "isConnected": false,
+      "joinedAt": "2026-04-22T10:54:15.854Z",
+      "lastPoll": "2026-04-22T11:03:13.618Z"
+    },
+    {
+      "roomId": "255VYC",
+      "sessionToken": "ef70dfd8-4d9a-46d3-954c-e08b56e6c353",
+      "role": "wholesaler",
+      "isHost": false,
+      "isReady": true,
+      "isConnected": false,
+      "joinedAt": "2026-04-22T10:54:27.797Z",
+      "lastPoll": "2026-04-22T11:03:13.961Z"
+    },
+    {
+      "roomId": "255VYC",
+      "sessionToken": "57c0b94c-09dd-4f77-848f-41a8db242dcd",
+      "role": "retailer",
+      "isHost": false,
+      "isReady": true,
+      "isConnected": false,
+      "joinedAt": "2026-04-22T10:57:11.341Z",
+      "lastPoll": "2026-04-22T10:57:45.488Z"
+    },
+    {
+      "roomId": "YTGQ93",
+      "sessionToken": "c97a4578-9ccc-4ce4-8c20-20b7faa246a9",
+      "role": "wholesaler",
+      "isHost": true,
+      "isReady": true,
+      "isConnected": true,
+      "joinedAt": "2026-04-22T11:03:15.981Z",
+      "lastPoll": "2026-04-22T11:07:00.123Z"
+    },
+    {
+      "roomId": "YTGQ93",
+      "sessionToken": "97c5af04-95de-4cc2-a7f0-88bb102b6a48",
+      "role": "factory",
+      "isHost": false,
+      "isReady": true,
+      "isConnected": false,
+      "joinedAt": "2026-04-22T11:03:36.113Z",
+      "lastPoll": "2026-04-22T11:06:32.150Z"
+    },
+    {
+      "roomId": "YTGQ93",
+      "sessionToken": "df6a41b1-c518-4846-b1c5-122bb321512f",
+      "role": "retailer",
+      "isHost": false,
+      "isReady": true,
+      "isConnected": true,
+      "joinedAt": "2026-04-22T11:03:45.148Z",
+      "lastPoll": "2026-04-22T11:06:59.359Z"
+    },
+    {
+      "roomId": "YTGQ93",
+      "sessionToken": "a5e345fb-1abf-40b8-af98-a59c77bc45b5",
+      "role": "distributor",
+      "isHost": false,
+      "isReady": true,
+      "isConnected": false,
+      "joinedAt": "2026-04-22T11:03:52.158Z",
+      "lastPoll": "2026-04-22T11:06:32.521Z"
+    }
+  ],
+  "gameStates": {
+    "GQPXF8": {
+      "roomId": "GQPXF8",
+      "stateJson": {
+        "currentWeek": 7,
+        "totalWeeks": 6,
+        "playerRole": "retailer",
+        "demandPattern": "spike",
+        "demandConfig": {
+          "baseDemand": 4,
+          "spikeWeek": 3,
+          "spikeAmount": 8,
+          "randomMin": 2,
+          "randomMax": 8
+        },
+        "stages": {
+          "retailer": {
+            "role": "retailer",
+            "inventory": 0,
+            "backlog": 1,
+            "incomingOrders": 8,
+            "outgoingShipments": 7,
+            "incomingShipments": 6,
+            "lastOrderPlaced": 13,
+            "totalInventoryCost": 18.5,
+            "totalBacklogCost": 1,
+            "orderPipeline": [
+              4,
+              4
+            ],
+            "shipmentPipeline": [
+              0,
+              3
+            ]
+          },
+          "wholesaler": {
+            "role": "wholesaler",
+            "inventory": 19,
+            "backlog": 0,
+            "incomingOrders": 3,
+            "outgoingShipments": 3,
+            "incomingShipments": 7,
+            "lastOrderPlaced": 0,
+            "totalInventoryCost": 39,
+            "totalBacklogCost": 0,
+            "orderPipeline": [
+              5,
+              13
+            ],
+            "shipmentPipeline": [
+              0,
+              0
+            ]
+          },
+          "distributor": {
+            "role": "distributor",
+            "inventory": 19,
+            "backlog": 0,
+            "incomingOrders": 0,
+            "outgoingShipments": 0,
+            "incomingShipments": 5,
+            "lastOrderPlaced": 0,
+            "totalInventoryCost": 37,
+            "totalBacklogCost": 0,
+            "orderPipeline": [
+              0,
+              0
+            ],
+            "shipmentPipeline": [
+              3,
+              0
+            ]
+          },
+          "factory": {
+            "role": "factory",
+            "inventory": 11,
+            "backlog": 0,
+            "incomingOrders": 0,
+            "outgoingShipments": 0,
+            "incomingShipments": 10,
+            "lastOrderPlaced": 0,
+            "totalInventoryCost": 20.5,
+            "totalBacklogCost": 3,
+            "orderPipeline": [
+              0,
+              0
+            ],
+            "shipmentPipeline": [
+              9,
+              0
+            ]
+          }
+        },
+        "history": {
+          "retailer": [
+            {
+              "week": 1,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 5,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            },
+            {
+              "week": 2,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 6,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            },
+            {
+              "week": 3,
+              "inventory": 8,
+              "backlog": 0,
+              "incomingOrders": 8,
+              "orderPlaced": 0,
+              "incomingShipments": 4,
+              "outgoingShipments": 8,
+              "cost": 4
+            },
+            {
+              "week": 4,
+              "inventory": 4,
+              "backlog": 0,
+              "incomingOrders": 8,
+              "orderPlaced": 3,
+              "incomingShipments": 4,
+              "outgoingShipments": 8,
+              "cost": 2
+            },
+            {
+              "week": 5,
+              "inventory": 1,
+              "backlog": 0,
+              "incomingOrders": 8,
+              "orderPlaced": 5,
+              "incomingShipments": 5,
+              "outgoingShipments": 8,
+              "cost": 0.5
+            },
+            {
+              "week": 6,
+              "inventory": 0,
+              "backlog": 1,
+              "incomingOrders": 8,
+              "orderPlaced": 13,
+              "incomingShipments": 6,
+              "outgoingShipments": 7,
+              "cost": 1
+            }
+          ],
+          "wholesaler": [
+            {
+              "week": 1,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 6,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            },
+            {
+              "week": 2,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 7,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            },
+            {
+              "week": 3,
+              "inventory": 11,
+              "backlog": 0,
+              "incomingOrders": 5,
+              "orderPlaced": 0,
+              "incomingShipments": 4,
+              "outgoingShipments": 5,
+              "cost": 5.5
+            },
+            {
+              "week": 4,
+              "inventory": 9,
+              "backlog": 0,
+              "incomingOrders": 6,
+              "orderPlaced": 0,
+              "incomingShipments": 4,
+              "outgoingShipments": 6,
+              "cost": 4.5
+            },
+            {
+              "week": 5,
+              "inventory": 15,
+              "backlog": 0,
+              "incomingOrders": 0,
+              "orderPlaced": 0,
+              "incomingShipments": 6,
+              "outgoingShipments": 0,
+              "cost": 7.5
+            },
+            {
+              "week": 6,
+              "inventory": 19,
+              "backlog": 0,
+              "incomingOrders": 3,
+              "orderPlaced": 0,
+              "incomingShipments": 7,
+              "outgoingShipments": 3,
+              "cost": 9.5
+            }
+          ],
+          "distributor": [
+            {
+              "week": 1,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 7,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            },
+            {
+              "week": 2,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 8,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            },
+            {
+              "week": 3,
+              "inventory": 10,
+              "backlog": 0,
+              "incomingOrders": 6,
+              "orderPlaced": 0,
+              "incomingShipments": 4,
+              "outgoingShipments": 6,
+              "cost": 5
+            },
+            {
+              "week": 4,
+              "inventory": 7,
+              "backlog": 0,
+              "incomingOrders": 7,
+              "orderPlaced": 0,
+              "incomingShipments": 4,
+              "outgoingShipments": 7,
+              "cost": 3.5
+            },
+            {
+              "week": 5,
+              "inventory": 14,
+              "backlog": 0,
+              "incomingOrders": 0,
+              "orderPlaced": 0,
+              "incomingShipments": 7,
+              "outgoingShipments": 0,
+              "cost": 7
+            },
+            {
+              "week": 6,
+              "inventory": 19,
+              "backlog": 0,
+              "incomingOrders": 0,
+              "orderPlaced": 0,
+              "incomingShipments": 5,
+              "outgoingShipments": 0,
+              "cost": 9.5
+            }
+          ],
+          "factory": [
+            {
+              "week": 1,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 0,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            },
+            {
+              "week": 2,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 0,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            },
+            {
+              "week": 3,
+              "inventory": 5,
+              "backlog": 0,
+              "incomingOrders": 7,
+              "orderPlaced": 4,
+              "incomingShipments": 0,
+              "outgoingShipments": 7,
+              "cost": 2.5
+            },
+            {
+              "week": 4,
+              "inventory": 0,
+              "backlog": 3,
+              "incomingOrders": 8,
+              "orderPlaced": 10,
+              "incomingShipments": 0,
+              "outgoingShipments": 5,
+              "cost": 3
+            },
+            {
+              "week": 5,
+              "inventory": 1,
+              "backlog": 0,
+              "incomingOrders": 0,
+              "orderPlaced": 9,
+              "incomingShipments": 4,
+              "outgoingShipments": 3,
+              "cost": 0.5
+            },
+            {
+              "week": 6,
+              "inventory": 11,
+              "backlog": 0,
+              "incomingOrders": 0,
+              "orderPlaced": 0,
+              "incomingShipments": 10,
+              "outgoingShipments": 0,
+              "cost": 5.5
+            }
+          ]
+        },
+        "customerDemand": [
+          4,
+          4,
+          8,
+          8,
+          8,
+          8
+        ],
+        "isGameOver": true,
+        "isStarted": true,
+        "config": {
+          "totalWeeks": 6,
+          "playerRole": "retailer",
+          "demandPattern": "spike",
+          "demandConfig": {
+            "baseDemand": 4,
+            "spikeWeek": 3,
+            "spikeAmount": 8,
+            "randomMin": 2,
+            "randomMax": 8
+          },
+          "initialInventory": 12,
+          "inventoryCostPerUnit": 0.5,
+          "backlogCostPerUnit": 1,
+          "orderDelay": 2,
+          "shipmentDelay": 2,
+          "timerConfig": {
+            "earlyRounds": 3,
+            "finalRounds": 5,
+            "earlyRoundDurationSec": 180,
+            "middleRoundDurationSec": 120,
+            "finalRoundDurationSec": 60
+          }
+        }
+      },
+      "currentWeek": 7,
+      "roundVersion": 7,
+      "isGameOver": true,
+      "updatedAt": "2026-04-15T06:45:57.813Z"
+    },
+    "255VYC": {
+      "roomId": "255VYC",
+      "stateJson": {
+        "currentWeek": 4,
+        "totalWeeks": 35,
+        "playerRole": "distributor",
+        "demandPattern": "constant",
+        "demandConfig": {
+          "baseDemand": 4,
+          "spikeWeek": 5,
+          "spikeAmount": 8,
+          "randomMin": 2,
+          "randomMax": 8
+        },
+        "stages": {
+          "retailer": {
+            "role": "retailer",
+            "inventory": 12,
+            "backlog": 0,
+            "incomingOrders": 4,
+            "outgoingShipments": 4,
+            "incomingShipments": 4,
+            "lastOrderPlaced": 0,
+            "totalInventoryCost": 18,
+            "totalBacklogCost": 0,
+            "orderPipeline": [
+              4,
+              4
+            ],
+            "shipmentPipeline": [
+              4,
+              0
+            ]
+          },
+          "wholesaler": {
+            "role": "wholesaler",
+            "inventory": 16,
+            "backlog": 0,
+            "incomingOrders": 0,
+            "outgoingShipments": 0,
+            "incomingShipments": 4,
+            "lastOrderPlaced": 0,
+            "totalInventoryCost": 20,
+            "totalBacklogCost": 0,
+            "orderPipeline": [
+              0,
+              0
+            ],
+            "shipmentPipeline": [
+              4,
+              0
+            ]
+          },
+          "distributor": {
+            "role": "distributor",
+            "inventory": 16,
+            "backlog": 0,
+            "incomingOrders": 0,
+            "outgoingShipments": 0,
+            "incomingShipments": 4,
+            "lastOrderPlaced": 0,
+            "totalInventoryCost": 20,
+            "totalBacklogCost": 0,
+            "orderPipeline": [
+              0,
+              0
+            ],
+            "shipmentPipeline": [
+              4,
+              0
+            ]
+          },
+          "factory": {
+            "role": "factory",
+            "inventory": 12,
+            "backlog": 0,
+            "incomingOrders": 0,
+            "outgoingShipments": 0,
+            "incomingShipments": 0,
+            "lastOrderPlaced": 4,
+            "totalInventoryCost": 18,
+            "totalBacklogCost": 0,
+            "orderPipeline": [
+              0,
+              0
+            ],
+            "shipmentPipeline": [
+              0,
+              4
+            ]
+          }
+        },
+        "history": {
+          "retailer": [
+            {
+              "week": 1,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 0,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            },
+            {
+              "week": 2,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 0,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            },
+            {
+              "week": 3,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 0,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            }
+          ],
+          "wholesaler": [
+            {
+              "week": 1,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 0,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            },
+            {
+              "week": 2,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 0,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            },
+            {
+              "week": 3,
+              "inventory": 16,
+              "backlog": 0,
+              "incomingOrders": 0,
+              "orderPlaced": 0,
+              "incomingShipments": 4,
+              "outgoingShipments": 0,
+              "cost": 8
+            }
+          ],
+          "distributor": [
+            {
+              "week": 1,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 0,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            },
+            {
+              "week": 2,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 0,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            },
+            {
+              "week": 3,
+              "inventory": 16,
+              "backlog": 0,
+              "incomingOrders": 0,
+              "orderPlaced": 0,
+              "incomingShipments": 4,
+              "outgoingShipments": 0,
+              "cost": 8
+            }
+          ],
+          "factory": [
+            {
+              "week": 1,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 0,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            },
+            {
+              "week": 2,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 0,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            },
+            {
+              "week": 3,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 0,
+              "orderPlaced": 4,
+              "incomingShipments": 0,
+              "outgoingShipments": 0,
+              "cost": 6
+            }
+          ]
+        },
+        "customerDemand": [
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "isGameOver": false,
+        "isStarted": true,
+        "config": {
+          "totalWeeks": 35,
+          "playerRole": "distributor",
+          "demandPattern": "constant",
+          "demandConfig": {
+            "baseDemand": 4,
+            "spikeWeek": 5,
+            "spikeAmount": 8,
+            "randomMin": 2,
+            "randomMax": 8
+          },
+          "initialInventory": 12,
+          "inventoryCostPerUnit": 0.5,
+          "backlogCostPerUnit": 1,
+          "orderDelay": 2,
+          "shipmentDelay": 2,
+          "timerConfig": {
+            "earlyRounds": 3,
+            "finalRounds": 5,
+            "earlyRoundDurationSec": 180,
+            "middleRoundDurationSec": 120,
+            "finalRoundDurationSec": 60
+          }
+        }
+      },
+      "currentWeek": 4,
+      "roundVersion": 4,
+      "isGameOver": false,
+      "updatedAt": "2026-04-22T11:06:50.730Z"
+    },
+    "YTGQ93": {
+      "roomId": "YTGQ93",
+      "stateJson": {
+        "currentWeek": 4,
+        "totalWeeks": 35,
+        "playerRole": "wholesaler",
+        "demandPattern": "constant",
+        "demandConfig": {
+          "baseDemand": 4,
+          "spikeWeek": 5,
+          "spikeAmount": 8,
+          "randomMin": 2,
+          "randomMax": 8
+        },
+        "stages": {
+          "retailer": {
+            "role": "retailer",
+            "inventory": 12,
+            "backlog": 0,
+            "incomingOrders": 4,
+            "outgoingShipments": 4,
+            "incomingShipments": 4,
+            "lastOrderPlaced": 4,
+            "totalInventoryCost": 18,
+            "totalBacklogCost": 0,
+            "orderPipeline": [
+              4,
+              4
+            ],
+            "shipmentPipeline": [
+              4,
+              4
+            ]
+          },
+          "wholesaler": {
+            "role": "wholesaler",
+            "inventory": 12,
+            "backlog": 0,
+            "incomingOrders": 4,
+            "outgoingShipments": 4,
+            "incomingShipments": 4,
+            "lastOrderPlaced": 4,
+            "totalInventoryCost": 18,
+            "totalBacklogCost": 0,
+            "orderPipeline": [
+              4,
+              4
+            ],
+            "shipmentPipeline": [
+              4,
+              4
+            ]
+          },
+          "distributor": {
+            "role": "distributor",
+            "inventory": 12,
+            "backlog": 0,
+            "incomingOrders": 4,
+            "outgoingShipments": 4,
+            "incomingShipments": 4,
+            "lastOrderPlaced": 0,
+            "totalInventoryCost": 18,
+            "totalBacklogCost": 0,
+            "orderPipeline": [
+              4,
+              4
+            ],
+            "shipmentPipeline": [
+              4,
+              4
+            ]
+          },
+          "factory": {
+            "role": "factory",
+            "inventory": 12,
+            "backlog": 0,
+            "incomingOrders": 4,
+            "outgoingShipments": 4,
+            "incomingShipments": 4,
+            "lastOrderPlaced": 4,
+            "totalInventoryCost": 18,
+            "totalBacklogCost": 0,
+            "orderPipeline": [
+              4,
+              0
+            ],
+            "shipmentPipeline": [
+              4,
+              4
+            ]
+          }
+        },
+        "history": {
+          "retailer": [
+            {
+              "week": 1,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 4,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            },
+            {
+              "week": 2,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 4,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            },
+            {
+              "week": 3,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 4,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            }
+          ],
+          "wholesaler": [
+            {
+              "week": 1,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 4,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            },
+            {
+              "week": 2,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 4,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            },
+            {
+              "week": 3,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 4,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            }
+          ],
+          "distributor": [
+            {
+              "week": 1,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 4,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            },
+            {
+              "week": 2,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 4,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            },
+            {
+              "week": 3,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 0,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            }
+          ],
+          "factory": [
+            {
+              "week": 1,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 4,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            },
+            {
+              "week": 2,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 4,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            },
+            {
+              "week": 3,
+              "inventory": 12,
+              "backlog": 0,
+              "incomingOrders": 4,
+              "orderPlaced": 4,
+              "incomingShipments": 4,
+              "outgoingShipments": 4,
+              "cost": 6
+            }
+          ]
+        },
+        "customerDemand": [
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "isGameOver": false,
+        "isStarted": true,
+        "config": {
+          "totalWeeks": 35,
+          "playerRole": "wholesaler",
+          "demandPattern": "constant",
+          "demandConfig": {
+            "baseDemand": 4,
+            "spikeWeek": 5,
+            "spikeAmount": 8,
+            "randomMin": 2,
+            "randomMax": 8
+          },
+          "initialInventory": 12,
+          "inventoryCostPerUnit": 0.5,
+          "backlogCostPerUnit": 1,
+          "orderDelay": 2,
+          "shipmentDelay": 2,
+          "timerConfig": {
+            "earlyRounds": 3,
+            "finalRounds": 5,
+            "earlyRoundDurationSec": 180,
+            "middleRoundDurationSec": 120,
+            "finalRoundDurationSec": 60
+          }
+        }
+      },
+      "currentWeek": 4,
+      "roundVersion": 4,
+      "isGameOver": false,
+      "updatedAt": "2026-04-22T11:06:48.565Z"
+    }
+  },
+  "pendingOrders": [
+    {
+      "roomId": "YTGQ93",
+      "role": "wholesaler",
+      "quantity": 4,
+      "isDraft": true,
+      "updatedAt": "2026-04-22T11:06:48.638Z"
+    },
+    {
+      "roomId": "YTGQ93",
+      "role": "retailer",
+      "quantity": 4,
+      "isDraft": true,
+      "updatedAt": "2026-04-22T11:06:49.425Z"
+    }
+  ],
+  "roundTimers": {
+    "YTGQ93": {
+      "roomId": "YTGQ93",
+      "round": 4,
+      "durationSeconds": 120,
+      "startedAtMs": 1776856008565,
+      "endsAtMs": 1776856128565
+    },
+    "255VYC": {
+      "roomId": "255VYC",
+      "round": 4,
+      "durationSeconds": 120,
+      "startedAtMs": 1776856010730,
+      "endsAtMs": 1776856130730
+    }
+  }
+}
