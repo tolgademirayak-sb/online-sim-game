@@ -1,73 +1,101 @@
-# Welcome to your Lovable project
+# Online Sim Game
 
-## Project info
+This project is a multiplayer beer game simulation with:
 
-**URL**: https://lovable.dev/projects/00176c48-88e1-4609-888c-22ba71cc560d
+- a React + Vite frontend
+- an Express backend
+- room/session management for players
+- an instructor dashboard
 
-## How can I edit this code?
+## Requirements
 
-There are several ways of editing your application.
+Install these first on a new computer:
 
-**Use Lovable**
+- Node.js 18+ recommended
+- npm
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/00176c48-88e1-4609-888c-22ba71cc560d) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+To verify installation:
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+node -v
+npm -v
 ```
 
-**Edit a file directly in GitHub**
+## Quick Start
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+After cloning the repo, only these two commands are needed:
 
-**Use GitHub Codespaces**
+```sh
+npm install
+npm run app
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+What they do:
 
-## What technologies are used for this project?
+- `npm install` installs the main app dependencies and automatically installs the backend dependencies inside `server/`
+- `npm run app` builds the frontend and backend, then starts the app on port `3001`
 
-This project is built with:
+## Full Setup From Scratch
 
-- Vite
-- TypeScript
+```sh
+git clone https://github.com/tolgademirayak-sb/online-sim-game.git
+cd online-sim-game
+npm install
+npm run app
+```
+
+## How To Open The App
+
+Once the server starts, open:
+
+```text
+http://localhost:3001
+```
+
+If other people on the same network will join, the terminal also prints LAN addresses such as:
+
+```text
+http://192.168.x.x:3001
+```
+
+They should open the LAN address, not `localhost`.
+
+## Instructor Use
+
+The instructor dashboard is available at:
+
+```text
+http://localhost:3001/instructor
+```
+
+Or on the same LAN URL:
+
+```text
+http://<host-ip>:3001/instructor
+```
+
+## Useful Commands
+
+- `npm run app`: build everything and start the app
+- `npm run build`: build frontend and backend
+- `npm run start`: start the built backend server
+- `npm run dev`: run the frontend in Vite dev mode
+- `npm run dev:server`: run the backend in watch mode
+
+## Classroom / LAN Notes
+
+If this will be hosted from one laptop for a class:
+
+- all devices must be on the same Wi-Fi or local network
+- the host machine should stay awake during the session
+- Windows Firewall may need to allow Node.js or TCP port `3001`
+- students should use the LAN URL shown in the terminal
+
+## Tech Stack
+
 - React
-- shadcn-ui
+- TypeScript
+- Vite
+- Express
 - Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/00176c48-88e1-4609-888c-22ba71cc560d) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+- shadcn-ui
