@@ -1,8 +1,27 @@
 # Deployment Guide
 
+## Simplest New-PC Setup
+
+For a fresh machine, run only:
+
+```sh
+npm install
+npm run app
+```
+
+What this does:
+
+- `npm install` installs the root dependencies and automatically installs `server/` dependencies too.
+- `npm run app` builds the client and server, then starts the unified server on port `3001`.
+
 ## Local Production Run
 
-1. Install dependencies in the project root and `server/`.
+1. Install dependencies in the project root:
+
+```sh
+npm install
+```
+
 2. Build the client and server:
 
 ```sh
