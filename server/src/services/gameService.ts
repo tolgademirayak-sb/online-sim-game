@@ -137,10 +137,6 @@ export function getGamePoll(roomId: string, sessionToken: string, sinceVersion?:
   const gs = store.gameStates.get(roomId);
   if (!gs) return null;
 
-  if (sinceVersion && gs.roundVersion <= sinceVersion) {
-    return null; // No change
-  }
-
   const gameState = gs.stateJson;
   const player = store.roomPlayers.find(p => p.roomId === roomId && p.sessionToken === sessionToken);
   const myRole = player?.role as Role;
@@ -150,6 +146,10 @@ export function getGamePoll(roomId: string, sessionToken: string, sinceVersion?:
   if (player) {
     player.lastPoll = now();
     player.isConnected = true;
+  }
+
+  if (sinceVersion && gs.roundVersion <= sinceVersion && !gameState.isGameOver) {
+    return null; // No change
   }
 
   const submitted = store.pendingOrders

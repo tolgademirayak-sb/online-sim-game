@@ -247,6 +247,8 @@ export function getRoomState(roomId: string, sessionToken: string): RoomStateRes
 
   markDisconnectedPlayers(roomId);
   const timer = store.roundTimers.get(roomId);
+  const gameState = store.gameStates.get(roomId);
+  const responseStatus = room.status === 'finished' && gameState?.isGameOver ? 'playing' : room.status;
 
   return {
     roomId: room.id,
@@ -254,7 +256,7 @@ export function getRoomState(roomId: string, sessionToken: string): RoomStateRes
     players: sanitizePlayersForViewer(roomId, sessionToken, room.anonymousMode),
     gameConfig: room.gameConfig,
     anonymousMode: room.anonymousMode,
-    status: room.status,
+    status: responseStatus,
     controllerMode: room.controllerMode,
     joinPasswordRequired: !!room.passwordHash,
     timerState: timer ? {

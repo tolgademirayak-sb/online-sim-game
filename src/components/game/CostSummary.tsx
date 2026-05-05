@@ -56,7 +56,7 @@ export function CostSummary({
       <div className="bg-gradient-to-r from-primary/20 to-accent/20 rounded-lg p-4 text-center">
         <p className="text-sm text-muted-foreground mb-1">
           {isCostLocked
-            ? `Week ${pendingCostReview?.week} Cost Check`
+            ? 'Cost Check'
             : privateView ? 'Your Total Cost' : 'Total System Cost'}
         </p>
         <p className="text-3xl font-bold gradient-text">
@@ -67,7 +67,7 @@ export function CostSummary({
       {isCostLocked ? (
         <div className="space-y-4 rounded-lg bg-primary/10 border border-primary/30 p-4">
           <div>
-            <p className="text-sm font-medium text-foreground">What was your cost for Week {pendingCostReview?.week}?</p>
+            <p className="text-sm font-medium text-foreground">What was your cost for the latest completed round?</p>
             <p className="text-xs text-muted-foreground mt-1">
               Enter your estimate first. We will validate it against the true internally calculated cost.
             </p>
@@ -156,7 +156,7 @@ export function CostSummary({
             : 'bg-destructive/10 border-destructive/30 text-destructive'
         )}>
           <p className="font-medium">
-            Week {latestCostReview.week} {latestCostReview.isCorrect ? 'cost entry was correct.' : 'cost entry was incorrect.'}
+            Your latest cost entry was {latestCostReview.isCorrect ? 'correct.' : 'incorrect.'}
           </p>
           <p className="mt-1 text-muted-foreground">
             You entered ${latestCostReview.enteredCost.toFixed(2)}. True cost: ${latestCostReview.trueCost.toFixed(2)}.

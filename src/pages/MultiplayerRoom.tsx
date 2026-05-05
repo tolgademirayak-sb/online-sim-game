@@ -5,7 +5,7 @@ import * as api from '@/lib/apiService';
 import { useRoomPolling, useGamePolling } from '@/hooks/useGamePolling';
 import type { RoomStateResponse } from '@/lib/apiTypes';
 import { Button } from '@/components/ui/button';
-import { GameSummary } from '@/components/game/GameSummary';
+import { MultiplayerGroupAnalysis } from '@/components/game/MultiplayerGroupAnalysis';
 import { GameCharts } from '@/components/game/GameCharts';
 import { CostSummary } from '@/components/game/CostSummary';
 import { cn } from '@/lib/utils';
@@ -69,12 +69,14 @@ export default function MultiplayerRoom() {
     }
   }, [roomId, navigate]);
 
-  // Fetch full results when game is over
+  // Fetch full results when game is over. Room status can flip to finished before
+  // the final game poll reaches this client, so watch both signals.
   useEffect(() => {
-    if (gamePoll?.isGameOver && roomId && !gameOverState) {
+    const isFinished = gamePoll?.isGameOver || roomState?.status === 'finished';
+    if (isFinished && roomId && !gameOverState) {
       api.getGameResults(roomId).then(setGameOverState).catch(() => {});
     }
-  }, [gamePoll?.isGameOver, roomId, gameOverState]);
+  }, [gamePoll?.isGameOver, roomState?.status, roomId, gameOverState]);
 
   const getDisplayName = (player: RoomStateResponse['players'][number], index: number) => {
     if (!roomState?.anonymousMode || roomState.controllerMode === 'instructor' || amController) {
@@ -200,12 +202,22 @@ export default function MultiplayerRoom() {
   // If game is over and we have full results
   if (gameOverState?.gameState) {
     return (
-      <GameSummary
-        gameState={gameOverState.gameState}
-        onRestart={handleLeave}
-        playerRoleOverride={myRole}
-        privateView={true}
+      <MultiplayerGroupAnalysis
+        results={gameOverState}
+        playerRole={myRole}
+        onLeave={handleLeave}
       />
+    );
+  }
+
+  if (roomState?.status === 'finished') {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+          <Loader2 className="h-5 w-5 animate-spin text-primary" />
+          Loading group analysis...
+        </div>
+      </div>
     );
   }
 
@@ -240,7 +252,7 @@ export default function MultiplayerRoom() {
                   {amController && <span className="text-xs text-muted-foreground ml-2">(Host)</span>}
                 </h2>
                 <p className="text-xs text-muted-foreground">
-                  Week {gamePoll.currentWeek} of {gamePoll.totalWeeks} · You are {ROLE_LABELS[myRole]}
+                  You are {ROLE_LABELS[myRole]}
                 </p>
               </div>
             </div>
@@ -265,7 +277,7 @@ export default function MultiplayerRoom() {
           {timerState && (
             <div className="glass-card rounded-xl p-4 flex items-center justify-between gap-4">
               <div>
-                <p className="text-sm font-semibold text-foreground">Round {timerState.round} countdown</p>
+                <p className="text-sm font-semibold text-foreground">Round countdown</p>
                 <p className="text-xs text-muted-foreground">
                   If time runs out, your latest valid draft order will be submitted automatically.
                 </p>
@@ -284,7 +296,7 @@ export default function MultiplayerRoom() {
                 <h2 className="text-lg font-semibold text-foreground">Place Your Order</h2>
                 <MultiplayerOrderInput
                   role={myRole}
-                  round={gamePoll.currentWeek}
+                  roundKey={gamePoll.roundVersion}
                   stage={playerStage}
                   onDraftChange={handleDraftOrderChange}
                   onSubmitOrder={handleSubmitOrder}
@@ -321,7 +333,7 @@ export default function MultiplayerRoom() {
               <CostSummary
                 gameState={{
                   currentWeek: gamePoll.currentWeek,
-                  totalWeeks: gamePoll.totalWeeks,
+                  totalWeeks: 0,
                   stages: { [myRole]: playerStage } as any,
                   history: { [myRole]: gamePoll.myHistory } as any,
                   config: roomState?.gameConfig,
@@ -336,7 +348,7 @@ export default function MultiplayerRoom() {
             <div className="lg:col-span-2 space-y-6">
               <div className="glass-card rounded-xl p-6">
                 <h3 className="text-lg font-semibold text-foreground mb-4">Private History</h3>
-                <GameCharts history={{ [myRole]: gamePoll.myHistory } as any} playerRole={myRole} />
+                <GameCharts history={{ [myRole]: gamePoll.myHistory } as any} playerRole={myRole} hideWeekAxis />
               </div>
             </div>
           </div>
@@ -574,9 +586,9 @@ export default function MultiplayerRoom() {
 }
 
 // Simple multiplayer order input
-function MultiplayerOrderInput({ role, round, stage, onDraftChange, onSubmitOrder, disabled }: {
+function MultiplayerOrderInput({ role, roundKey, stage, onDraftChange, onSubmitOrder, disabled }: {
   role: Role;
-  round: number;
+  roundKey: number;
   stage: { inventory: number; backlog: number; incomingOrders: number; lastOrderPlaced: number };
   onDraftChange: (q: number) => void;
   onSubmitOrder: (q: number) => void;
@@ -588,7 +600,7 @@ function MultiplayerOrderInput({ role, round, stage, onDraftChange, onSubmitOrde
     const nextQty = Math.max(0, stage.lastOrderPlaced ?? 4);
     setQty(nextQty);
     onDraftChange(nextQty);
-  }, [round, stage.lastOrderPlaced]);
+  }, [roundKey, stage.lastOrderPlaced]);
 
   const incomingLabel = role === 'retailer' ? 'Customer Demand' : 'Orders In';
   return (

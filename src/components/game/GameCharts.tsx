@@ -14,9 +14,10 @@ interface GameChartsProps {
   history: Record<Role, WeeklyRecord[]>;
   playerRole: Role;
   showAllRoles?: boolean;
+  hideWeekAxis?: boolean;
 }
 
-export function GameCharts({ history, playerRole, showAllRoles = false }: GameChartsProps) {
+export function GameCharts({ history, playerRole, showAllRoles = false, hideWeekAxis = false }: GameChartsProps) {
   const playerHistory = history[playerRole] || [];
   
   if (playerHistory.length === 0) {
@@ -64,6 +65,7 @@ export function GameCharts({ history, playerRole, showAllRoles = false }: GameCh
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(217, 33%, 25%)" />
                 <XAxis 
                   dataKey="week" 
+                  hide={hideWeekAxis}
                   stroke="hsl(215, 20%, 65%)" 
                   tick={{ fill: 'hsl(215, 20%, 65%)', fontSize: 12 }}
                 />
@@ -72,6 +74,7 @@ export function GameCharts({ history, playerRole, showAllRoles = false }: GameCh
                   tick={{ fill: 'hsl(215, 20%, 65%)', fontSize: 12 }}
                 />
                 <Tooltip
+                  labelFormatter={hideWeekAxis ? () => '' : undefined}
                   contentStyle={{
                     backgroundColor: 'hsl(222, 47%, 14%)',
                     border: '1px solid hsl(217, 33%, 25%)',
@@ -121,6 +124,7 @@ export function GameCharts({ history, playerRole, showAllRoles = false }: GameCh
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(217, 33%, 25%)" />
                   <XAxis 
                     dataKey="week" 
+                    hide={hideWeekAxis}
                     stroke="hsl(215, 20%, 65%)" 
                     tick={{ fill: 'hsl(215, 20%, 65%)', fontSize: 12 }}
                   />
@@ -129,6 +133,7 @@ export function GameCharts({ history, playerRole, showAllRoles = false }: GameCh
                     tick={{ fill: 'hsl(215, 20%, 65%)', fontSize: 12 }}
                   />
                   <Tooltip
+                    labelFormatter={hideWeekAxis ? () => '' : undefined}
                     contentStyle={{
                       backgroundColor: 'hsl(222, 47%, 14%)',
                       border: '1px solid hsl(217, 33%, 25%)',
@@ -161,6 +166,7 @@ export function GameCharts({ history, playerRole, showAllRoles = false }: GameCh
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(217, 33%, 25%)" />
                   <XAxis 
                     dataKey="week" 
+                    hide={hideWeekAxis}
                     stroke="hsl(215, 20%, 65%)" 
                     tick={{ fill: 'hsl(215, 20%, 65%)', fontSize: 12 }}
                   />
@@ -169,6 +175,7 @@ export function GameCharts({ history, playerRole, showAllRoles = false }: GameCh
                     tick={{ fill: 'hsl(215, 20%, 65%)', fontSize: 12 }}
                   />
                   <Tooltip
+                    labelFormatter={hideWeekAxis ? () => '' : undefined}
                     contentStyle={{
                       backgroundColor: 'hsl(222, 47%, 14%)',
                       border: '1px solid hsl(217, 33%, 25%)',
