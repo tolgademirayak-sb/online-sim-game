@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const StartPage = lazy(() => import("./pages/StartPage"));
 const Index = lazy(() => import("./pages/Index"));
@@ -22,6 +23,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <ThemeToggle />
         <BrowserRouter>
           <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center text-sm text-muted-foreground">Loading...</div>}> 
             <Routes>
