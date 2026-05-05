@@ -40,6 +40,7 @@ export interface RoomPlayer {
 
 export interface RoomStateResponse {
   roomId: string;
+  classroomId: string | null;
   label: string | null;
   players: RoomPlayer[];
   gameConfig: GameConfig;
@@ -97,6 +98,7 @@ export interface SessionInfoResponse {
 
 export interface InstructorRoomSummary {
   roomId: string;
+  classroomId: string | null;
   label: string | null;
   status: RoomStatus;
   controllerMode: RoomControllerMode;
@@ -108,4 +110,51 @@ export interface InstructorRoomSummary {
   joinPasswordRequired: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ClassroomRoomSummary extends InstructorRoomSummary {
+  teamNumber: number;
+}
+
+export interface ClassroomSummary {
+  classCode: string;
+  label: string;
+  roomCount: number;
+  capacity: number;
+  playerCount: number;
+  connectedCount: number;
+  status: RoomStatus;
+  joinPasswordRequired: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ClassroomDetail extends ClassroomSummary {
+  rooms: ClassroomRoomSummary[];
+}
+
+export interface CreateClassroomPayload {
+  label: string;
+  roomCount: number;
+  password?: string;
+  gameConfig?: Partial<GameConfig>;
+}
+
+export interface JoinClassroomResponse {
+  roomId: string;
+  classCode: string;
+}
+
+export interface ClassroomTeamAnalysis {
+  roomId: string;
+  label: string | null;
+  teamNumber: number;
+  gameState: GameState;
+  bullwhipRatios: Record<Role, number>;
+}
+
+export interface ClassroomAnalysisResponse {
+  classCode: string;
+  label: string;
+  teams: ClassroomTeamAnalysis[];
 }

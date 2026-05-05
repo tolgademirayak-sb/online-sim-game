@@ -6,6 +6,7 @@ import roomRoutes from './routes/rooms.js';
 import gameRoutes from './routes/game.js';
 import adminRoutes from './routes/admin.js';
 import instructorRoutes from './routes/instructor.js';
+import classroomRoutes from './routes/classrooms.js';
 import { sweepExpiredTimers } from './services/gameService.js';
 import path from 'path';
 import fs from 'fs';
@@ -58,6 +59,7 @@ function main() {
   app.use('/api/rooms', gameRoutes);
   app.use('/api/admin', adminRoutes);
   app.use('/api/instructor', instructorRoutes);
+  app.use('/api/classrooms', classroomRoutes);
 
   // Health check
   app.get('/api/health', (_req, res) => {

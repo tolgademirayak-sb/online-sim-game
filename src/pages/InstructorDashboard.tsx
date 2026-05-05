@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Copy, GraduationCap, Loader2, Play, RefreshCw, ShieldCheck, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import * as api from '@/lib/apiService';
-import type { InstructorRoomSummary, RoomStateResponse } from '@/lib/apiTypes';
+import type { ClassroomDetail, ClassroomRoomSummary, ClassroomSummary, RoomStateResponse } from '@/lib/apiTypes';
 import { DEFAULT_CONFIG, DEFAULT_DEMAND_CONFIG, ROLE_LABELS, Role, DemandPattern, TimerConfig } from '@/types/game';
-import { calculateBullwhipRatio, calculateTotalCost, runAutomatedSimulation } from '@/lib/gameLogic';
+import { calculateBullwhipRatio, calculateTotalCost } from '@/lib/gameLogic';
 import { toast } from 'sonner';
 
 interface InstructorRoomDetail {
@@ -22,13 +22,16 @@ export default function InstructorDashboard() {
   const [isBooting, setIsBooting] = useState(true);
   const [isCreatingSession, setIsCreatingSession] = useState(false);
   const [instructorName, setInstructorName] = useState('');
-  const [rooms, setRooms] = useState<InstructorRoomSummary[]>([]);
+  const [classrooms, setClassrooms] = useState<ClassroomSummary[]>([]);
+  const [selectedClassCode, setSelectedClassCode] = useState<string | null>(null);
+  const [selectedClassroom, setSelectedClassroom] = useState<ClassroomDetail | null>(null);
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [selectedRoom, setSelectedRoom] = useState<InstructorRoomDetail | null>(null);
   const [refreshTick, setRefreshTick] = useState(0);
-  const [isCreatingRooms, setIsCreatingRooms] = useState(false);
+  const [isCreatingClassroom, setIsCreatingClassroom] = useState(false);
+  const [isStartingClassroom, setIsStartingClassroom] = useState(false);
   const [roomCount, setRoomCount] = useState(4);
-  const [labelPrefix, setLabelPrefix] = useState('Team');
+  const [classroomLabel, setClassroomLabel] = useState('ECON 301 Tutorial 1');
   const [roomPassword, setRoomPassword] = useState('');
   const [demandPattern, setDemandPattern] = useState<DemandPattern>(DEFAULT_CONFIG.demandPattern);
   const [baseDemand, setBaseDemand] = useState(DEFAULT_DEMAND_CONFIG.baseDemand);
@@ -53,34 +56,71 @@ export default function InstructorDashboard() {
     }
 
     let active = true;
-    const loadRooms = async () => {
+    const loadClassrooms = async () => {
       try {
-        const nextRooms = await api.listInstructorRooms();
+        const nextClassrooms = await api.listInstructorClassrooms();
         if (!active) {
           return;
         }
 
-        setRooms(nextRooms);
-        if (!selectedRoomId && nextRooms[0]) {
-          setSelectedRoomId(nextRooms[0].roomId);
+        setClassrooms(nextClassrooms);
+        if (!selectedClassCode && nextClassrooms[0]) {
+          setSelectedClassCode(nextClassrooms[0].classCode);
         }
-        if (selectedRoomId && !nextRooms.some(room => room.roomId === selectedRoomId)) {
-          setSelectedRoomId(nextRooms[0]?.roomId || null);
+        if (selectedClassCode && !nextClassrooms.some(classroom => classroom.classCode === selectedClassCode)) {
+          setSelectedClassCode(nextClassrooms[0]?.classCode || null);
         }
       } catch (err: any) {
         if (active) {
-          toast.error(err.message || 'Could not load instructor rooms');
+          toast.error(err.message || 'Could not load classrooms');
         }
       }
     };
 
-    loadRooms();
-    const handle = window.setInterval(loadRooms, 3000);
+    loadClassrooms();
+    const handle = window.setInterval(loadClassrooms, 3000);
     return () => {
       active = false;
       window.clearInterval(handle);
     };
-  }, [sessionInfo, selectedRoomId, refreshTick]);
+  }, [sessionInfo, selectedClassCode, refreshTick]);
+
+  useEffect(() => {
+    if (!sessionInfo || !selectedClassCode) {
+      setSelectedClassroom(null);
+      setSelectedRoomId(null);
+      return;
+    }
+
+    let active = true;
+    const loadClassroomDetail = async () => {
+      try {
+        const detail = await api.getInstructorClassroom(selectedClassCode);
+        if (!active) {
+          return;
+        }
+
+        setSelectedClassroom(detail);
+        if (!selectedRoomId && detail.rooms[0]) {
+          setSelectedRoomId(detail.rooms[0].roomId);
+        }
+        if (selectedRoomId && !detail.rooms.some(room => room.roomId === selectedRoomId)) {
+          setSelectedRoomId(detail.rooms[0]?.roomId || null);
+        }
+      } catch (err: any) {
+        if (active) {
+          toast.error(err.message || 'Could not load classroom detail');
+        }
+      }
+    };
+
+    loadClassroomDetail();
+    const handle = window.setInterval(loadClassroomDetail, 3000);
+    return () => {
+      active = false;
+      window.clearInterval(handle);
+    };
+  }, [sessionInfo, selectedClassCode, selectedRoomId, refreshTick]);
 
   useEffect(() => {
     if (!sessionInfo || !selectedRoomId) {
@@ -110,14 +150,6 @@ export default function InstructorDashboard() {
     };
   }, [sessionInfo, selectedRoomId, refreshTick]);
 
-  const teachingScenario = useMemo(() => (
-    runAutomatedSimulation({
-      totalWeeks: 20,
-      demandPattern: 'spike',
-      demandConfig: { ...DEFAULT_DEMAND_CONFIG, spikeWeek: 5, spikeAmount: 9 },
-    })
-  ), []);
-
   const createInstructorSession = async () => {
     if (!instructorName.trim()) {
       toast.error('Please enter an instructor name');
@@ -136,13 +168,18 @@ export default function InstructorDashboard() {
     }
   };
 
-  const createRoomBatch = async () => {
-    setIsCreatingRooms(true);
+  const createClassroom = async () => {
+    if (!classroomLabel.trim()) {
+      toast.error('Please enter a classroom name');
+      return;
+    }
+
+    setIsCreatingClassroom(true);
     try {
-      const roomIds = await api.createInstructorRooms({
-        count: roomCount,
+      const classroom = await api.createClassroom({
+        label: classroomLabel.trim(),
+        roomCount,
         password: roomPassword || undefined,
-        labelPrefix: labelPrefix || 'Team',
         gameConfig: {
           totalWeeks,
           demandPattern,
@@ -155,14 +192,16 @@ export default function InstructorDashboard() {
         },
       });
 
-      toast.success(`${roomIds.length} instructor room${roomIds.length > 1 ? 's' : ''} created`);
-      if (roomIds[0]) {
-        setSelectedRoomId(roomIds[0]);
+      toast.success(`${classroom.label} created with ${classroom.roomCount} team${classroom.roomCount > 1 ? 's' : ''}`);
+      setSelectedClassCode(classroom.classCode);
+      setSelectedClassroom(classroom);
+      if (classroom.rooms[0]) {
+        setSelectedRoomId(classroom.rooms[0].roomId);
       }
     } catch (err: any) {
-      toast.error(err.message || 'Could not create rooms');
+      toast.error(err.message || 'Could not create classroom');
     } finally {
-      setIsCreatingRooms(false);
+      setIsCreatingClassroom(false);
     }
   };
 
@@ -215,7 +254,42 @@ export default function InstructorDashboard() {
     }
   };
 
-  const copyJoinCode = async (room: InstructorRoomSummary) => {
+  const copyClassCode = async (classroom: ClassroomSummary | ClassroomDetail) => {
+    const passwordLine = classroom.joinPasswordRequired && roomPassword.trim()
+      ? `\nPassword: ${roomPassword.trim()}`
+      : '';
+    const classInfo = `Class Code: ${classroom.classCode}${passwordLine}`;
+
+    try {
+      if (!navigator.clipboard?.writeText) {
+        toast.info(classInfo);
+        return;
+      }
+      await navigator.clipboard.writeText(classInfo);
+      toast.success(`Copied ${classroom.classCode}`);
+    } catch {
+      toast.info(classInfo);
+    }
+  };
+
+  const handleStartClassroom = async () => {
+    if (!selectedClassroom) {
+      return;
+    }
+
+    setIsStartingClassroom(true);
+    try {
+      const startedRoomIds = await api.startClassroomGames(selectedClassroom.classCode);
+      toast.success(`${startedRoomIds.length} team game${startedRoomIds.length > 1 ? 's' : ''} started`);
+      setRefreshTick((value) => value + 1);
+    } catch (err: any) {
+      toast.error(err.message || 'Could not start classroom games');
+    } finally {
+      setIsStartingClassroom(false);
+    }
+  };
+
+  const copyJoinCode = async (room: ClassroomRoomSummary) => {
     const passwordLine = room.joinPasswordRequired && roomPassword.trim()
       ? `\nPassword: ${roomPassword.trim()}`
       : '';
@@ -283,14 +357,18 @@ export default function InstructorDashboard() {
     );
   }
 
-  const selectedSummary = rooms.find(room => room.roomId === selectedRoomId) || null;
+  const selectedSummary = selectedClassroom?.rooms.find(room => room.roomId === selectedRoomId) || null;
   const selectedState = selectedRoom?.roomState || null;
   const selectedGameState = selectedRoom?.gameState || null;
   const selectedResults = selectedRoom?.results || null;
   const selectedRatios = selectedResults?.bullwhipRatios
     || (selectedGameState ? calculateBullwhipRatio(selectedGameState.history) : null);
   const timerConfig = selectedState?.gameConfig.timerConfig;
-  const scenarioRatios = calculateBullwhipRatio(teachingScenario.history);
+  const totalRooms = classrooms.reduce((sum, classroom) => sum + classroom.roomCount, 0);
+  const totalPlayers = classrooms.reduce((sum, classroom) => sum + classroom.playerCount, 0);
+  const liveClassrooms = classrooms.filter(classroom => classroom.status === 'playing').length;
+  const selectedClassroomFinished = !!selectedClassroom?.rooms.length
+    && selectedClassroom.rooms.every(room => room.status === 'finished');
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
@@ -304,34 +382,68 @@ export default function InstructorDashboard() {
             <div>
               <h1 className="text-3xl font-bold text-foreground">Instructor Dashboard</h1>
               <p className="text-sm text-muted-foreground">
-                Logged in as {sessionInfo.playerName}. One server, many rooms, instructor-controlled start/roles/timers.
+                Logged in as {sessionInfo.playerName}. Create classrooms, fill team rooms automatically, and manage each game.
               </p>
             </div>
           </div>
 
           <div className="grid grid-cols-3 gap-3 text-center">
-            <SummaryStat label="Rooms" value={rooms.length} />
-            <SummaryStat label="Live" value={rooms.filter(room => room.status === 'playing').length} />
-            <SummaryStat label="Players" value={rooms.reduce((sum, room) => sum + room.playerCount, 0)} />
+            <SummaryStat label="Classes" value={classrooms.length} />
+            <SummaryStat label="Live" value={liveClassrooms} />
+            <SummaryStat label="Players" value={`${totalPlayers}/${totalRooms * 4}`} />
           </div>
         </div>
+
+        {selectedClassroom && (
+          <section className="glass-card rounded-2xl p-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-foreground">{selectedClassroom.label}</h2>
+              <p className="text-sm text-muted-foreground">
+                Class code <span className="font-mono text-primary">{selectedClassroom.classCode}</span> - {selectedClassroom.playerCount}/{selectedClassroom.capacity} students joined
+              </p>
+            </div>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Button variant="outline" onClick={() => copyClassCode(selectedClassroom)} className="gap-2">
+                <Copy className="h-4 w-4" />
+                Copy Class Code
+              </Button>
+              <Button
+                onClick={handleStartClassroom}
+                disabled={isStartingClassroom || !selectedClassroom.rooms.some(room => room.status === 'lobby')}
+                className="gap-2"
+              >
+                {isStartingClassroom ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
+                {isStartingClassroom ? 'Starting Class...' : 'Start Class'}
+              </Button>
+              {selectedClassroomFinished && (
+                <Button
+                  onClick={() => navigate(`/instructor/classrooms/${selectedClassroom.classCode}/analysis`)}
+                  className="gap-2 bg-accent hover:bg-accent/90 text-accent-foreground"
+                >
+                  <GraduationCap className="h-4 w-4" />
+                  Open Analysis
+                </Button>
+              )}
+            </div>
+          </section>
+        )}
 
         <div className="grid xl:grid-cols-[380px,1fr] gap-6">
           <div className="space-y-6">
             <section className="glass-card rounded-2xl p-6 space-y-4">
               <div>
-                <h2 className="text-lg font-semibold text-foreground">Create Room Batch</h2>
+                <h2 className="text-lg font-semibold text-foreground">Create Classroom</h2>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Build multiple classroom rooms at once. Each room gets its own shareable join code.
+                  Create one class code and the system will assign students into 4-player team rooms.
                 </p>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <Field label="Room count">
-                  <Input type="number" min={1} max={12} value={roomCount} onChange={(e) => setRoomCount(Math.max(1, Math.min(12, parseInt(e.target.value, 10) || 1)))} />
+                <Field label="Class name">
+                  <Input value={classroomLabel} onChange={(e) => setClassroomLabel(e.target.value)} placeholder="ECON 301 Tutorial 1" />
                 </Field>
-                <Field label="Label prefix">
-                  <Input value={labelPrefix} onChange={(e) => setLabelPrefix(e.target.value)} placeholder="Team" />
+                <Field label="Games / teams">
+                  <Input type="number" min={1} max={12} value={roomCount} onChange={(e) => setRoomCount(Math.max(1, Math.min(12, parseInt(e.target.value, 10) || 1)))} />
                 </Field>
                 <Field label="Shared password">
                   <Input type="password" value={roomPassword} onChange={(e) => setRoomPassword(e.target.value)} placeholder="Optional" />
@@ -369,60 +481,89 @@ export default function InstructorDashboard() {
                 </div>
               </div>
 
-              <Button onClick={createRoomBatch} disabled={isCreatingRooms} className="w-full gap-2">
-                {isCreatingRooms ? <Loader2 className="h-4 w-4 animate-spin" /> : <Users className="h-4 w-4" />}
-                {isCreatingRooms ? 'Creating rooms...' : 'Create Instructor Rooms'}
+              <Button onClick={createClassroom} disabled={isCreatingClassroom} className="w-full gap-2">
+                {isCreatingClassroom ? <Loader2 className="h-4 w-4 animate-spin" /> : <Users className="h-4 w-4" />}
+                {isCreatingClassroom ? 'Creating classroom...' : 'Create Classroom'}
               </Button>
             </section>
 
             <section className="glass-card rounded-2xl p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold text-foreground">Your Rooms</h2>
-                  <p className="text-xs text-muted-foreground mt-1">Select a room to manage assignments and monitor gameplay.</p>
+                  <h2 className="text-lg font-semibold text-foreground">Classrooms</h2>
+                  <p className="text-xs text-muted-foreground mt-1">Select a classroom, then choose a team room to manage.</p>
                 </div>
                 <Button variant="outline" size="sm" onClick={() => setRefreshTick((value) => value + 1)}>
                   <RefreshCw className="h-4 w-4" />
                 </Button>
               </div>
 
-              <div className="space-y-3 max-h-[460px] overflow-auto pr-1">
-                {rooms.length === 0 && (
+              <div className="space-y-3 max-h-[560px] overflow-auto pr-1">
+                {classrooms.length === 0 && (
                   <div className="rounded-xl border border-dashed border-border/60 p-6 text-sm text-muted-foreground">
-                    No rooms yet. Create a batch above and the join codes will appear here.
+                    No classrooms yet. Create one above and the class code will appear here.
                   </div>
                 )}
 
-                {rooms.map((room) => (
-                  <button
-                    key={room.roomId}
-                    onClick={() => setSelectedRoomId(room.roomId)}
-                    className={`w-full rounded-xl border p-4 text-left transition-colors ${
-                      room.roomId === selectedRoomId
-                        ? 'border-primary bg-primary/10'
-                        : 'border-border bg-muted/20 hover:bg-muted/30'
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="font-semibold text-foreground">{room.label || room.roomId}</p>
-                        <p className="font-mono text-sm text-primary">{room.roomId}</p>
+                {classrooms.map((classroom) => (
+                  <div key={classroom.classCode} className="rounded-xl border border-border bg-muted/15 p-3 space-y-3">
+                    <button
+                      onClick={() => setSelectedClassCode(classroom.classCode)}
+                      className={`w-full rounded-lg p-3 text-left transition-colors ${
+                        classroom.classCode === selectedClassCode
+                          ? 'bg-primary/10'
+                          : 'bg-muted/20 hover:bg-muted/30'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="font-semibold text-foreground">{classroom.label}</p>
+                          <p className="font-mono text-sm text-primary">{classroom.classCode}</p>
+                        </div>
+                        <span className={`rounded-full px-2 py-1 text-[11px] uppercase tracking-wide ${
+                          classroom.status === 'playing'
+                            ? 'bg-primary/15 text-primary'
+                            : classroom.status === 'finished'
+                              ? 'bg-muted text-muted-foreground'
+                              : 'bg-accent/15 text-accent'
+                        }`}>
+                          {classroom.status}
+                        </span>
                       </div>
-                      <span className={`rounded-full px-2 py-1 text-[11px] uppercase tracking-wide ${
-                        room.status === 'playing'
-                          ? 'bg-primary/15 text-primary'
-                          : room.status === 'finished'
-                            ? 'bg-muted text-muted-foreground'
-                            : 'bg-accent/15 text-accent'
-                      }`}>
-                        {room.status}
-                      </span>
-                    </div>
-                    <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-                      <span>{room.playerCount}/4 players</span>
-                      <span>{room.connectedCount} connected</span>
-                    </div>
-                  </button>
+                      <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
+                        <span>{classroom.roomCount} teams</span>
+                        <span>{classroom.playerCount}/{classroom.capacity} players</span>
+                      </div>
+                    </button>
+
+                    {classroom.classCode === selectedClassCode && selectedClassroom && (
+                      <div className="space-y-2">
+                        <Button variant="outline" size="sm" onClick={() => copyClassCode(selectedClassroom)} className="w-full gap-2">
+                          <Copy className="h-4 w-4" />
+                          Copy Class Code
+                        </Button>
+                        {selectedClassroom.rooms.map((room) => (
+                          <button
+                            key={room.roomId}
+                            onClick={() => setSelectedRoomId(room.roomId)}
+                            className={`w-full rounded-lg border p-3 text-left transition-colors ${
+                              room.roomId === selectedRoomId
+                                ? 'border-primary bg-primary/10'
+                                : 'border-border bg-background/60 hover:bg-muted/30'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between gap-2">
+                              <div>
+                                <p className="font-medium text-foreground">{room.label || `Team ${room.teamNumber}`}</p>
+                                <p className="font-mono text-xs text-muted-foreground">{room.roomId}</p>
+                              </div>
+                              <span className="text-xs text-muted-foreground">{room.playerCount}/4</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 ))}
               </div>
             </section>
@@ -436,14 +577,20 @@ export default function InstructorDashboard() {
                     <div>
                       <h2 className="text-2xl font-bold text-foreground">{selectedSummary.label || selectedSummary.roomId}</h2>
                       <p className="text-sm text-muted-foreground">
-                        Share room ID <span className="font-mono text-primary">{selectedSummary.roomId}</span>
-                        {selectedSummary.joinPasswordRequired ? ' with the shared password' : ' directly with players'}.
+                        Class <span className="font-mono text-primary">{selectedClassroom?.classCode}</span> assigns students automatically.
+                        Room code <span className="font-mono text-primary">{selectedSummary.roomId}</span> still works for direct assignment.
                       </p>
                     </div>
                     <div className="flex gap-2">
+                      {selectedClassroom && (
+                        <Button variant="outline" onClick={() => copyClassCode(selectedClassroom)} className="gap-2">
+                          <Copy className="h-4 w-4" />
+                          Copy Class
+                        </Button>
+                      )}
                       <Button variant="outline" onClick={() => copyJoinCode(selectedSummary)} className="gap-2">
                         <Copy className="h-4 w-4" />
-                        Copy Join Info
+                        Copy Room
                       </Button>
                       <Button onClick={handleStartRoom} disabled={selectedState.status !== 'lobby' || !selectedState.players.every(player => player.isReady && player.role)} className="gap-2">
                         <Play className="h-4 w-4" />
@@ -553,24 +700,6 @@ export default function InstructorDashboard() {
               </section>
             )}
 
-            <section className="glass-card rounded-2xl p-6 space-y-4">
-              <div>
-                <h2 className="text-lg font-semibold text-foreground">Teaching Snapshot</h2>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Precomputed benchmark scenario kept from the report so you can compare classroom results with an expected bullwhip pattern.
-                </p>
-              </div>
-
-              <div className="grid md:grid-cols-4 gap-3">
-                {(['retailer', 'wholesaler', 'distributor', 'factory'] as Role[]).map((role) => (
-                  <div key={role} className="rounded-xl bg-muted/20 p-4">
-                    <p className="text-sm text-muted-foreground">{ROLE_LABELS[role]}</p>
-                    <p className="mt-2 text-xl font-bold text-foreground">{scenarioRatios[role].toFixed(2)}x</p>
-                    <p className="text-xs text-muted-foreground">variance amplification</p>
-                  </div>
-                ))}
-              </div>
-            </section>
           </div>
         </div>
       </div>

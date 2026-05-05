@@ -8,6 +8,11 @@ import type {
   AdminStatsResponse,
   SessionInfoResponse,
   InstructorRoomSummary,
+  ClassroomSummary,
+  ClassroomDetail,
+  CreateClassroomPayload,
+  JoinClassroomResponse,
+  ClassroomAnalysisResponse,
 } from './apiTypes';
 
 const API_BASE = '/api';
@@ -122,6 +127,13 @@ export async function joinRoom(roomId: string, password?: string): Promise<void>
   });
 }
 
+export async function joinClassroom(classCode: string, password?: string): Promise<JoinClassroomResponse> {
+  return fetchJson<JoinClassroomResponse>(`/classrooms/${encodeURIComponent(classCode)}/join`, {
+    method: 'POST',
+    body: JSON.stringify({ password }),
+  });
+}
+
 export async function leaveRoom(roomId: string): Promise<void> {
   await fetchJson(`/rooms/${roomId}/leave`, { method: 'POST' });
 }
@@ -196,6 +208,32 @@ export async function getGameResults(roomId: string): Promise<GameResultsRespons
 
 export async function listInstructorRooms(): Promise<InstructorRoomSummary[]> {
   return fetchJson<InstructorRoomSummary[]>('/instructor/rooms');
+}
+
+export async function listInstructorClassrooms(): Promise<ClassroomSummary[]> {
+  return fetchJson<ClassroomSummary[]>('/instructor/classrooms');
+}
+
+export async function createClassroom(payload: CreateClassroomPayload): Promise<ClassroomDetail> {
+  return fetchJson<ClassroomDetail>('/instructor/classrooms', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function getInstructorClassroom(classCode: string): Promise<ClassroomDetail> {
+  return fetchJson<ClassroomDetail>(`/instructor/classrooms/${encodeURIComponent(classCode)}`);
+}
+
+export async function startClassroomGames(classCode: string): Promise<string[]> {
+  const data = await fetchJson<{ startedRoomIds: string[] }>(`/instructor/classrooms/${encodeURIComponent(classCode)}/start`, {
+    method: 'POST',
+  });
+  return data.startedRoomIds;
+}
+
+export async function getClassroomAnalysis(classCode: string): Promise<ClassroomAnalysisResponse> {
+  return fetchJson<ClassroomAnalysisResponse>(`/instructor/classrooms/${encodeURIComponent(classCode)}/analysis`);
 }
 
 export async function createInstructorRooms(payload: {

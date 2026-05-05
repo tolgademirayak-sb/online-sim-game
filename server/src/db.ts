@@ -18,6 +18,7 @@ export interface SessionRecord {
 
 export interface RoomRecord {
   id: string;
+  classroomId: string | null;
   passwordHash: string | null;
   hostToken: string;
   label: string | null;
@@ -25,6 +26,16 @@ export interface RoomRecord {
   gameConfig: GameConfig;
   anonymousMode: boolean;
   status: RoomStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ClassroomRecord {
+  id: string;
+  label: string;
+  instructorToken: string;
+  passwordHash: string | null;
+  roomIds: string[];
   createdAt: string;
   updatedAt: string;
 }
@@ -67,6 +78,7 @@ export interface RoundTimerRecord {
 
 export interface Store {
   sessions: Map<string, SessionRecord>;
+  classrooms: Map<string, ClassroomRecord>;
   rooms: Map<string, RoomRecord>;
   roomPlayers: RoomPlayerRecord[];
   gameStates: Map<string, GameStateRecord>;
@@ -93,6 +105,7 @@ export function initStore(): Store {
           roomId,
           {
             ...room,
+            classroomId: room.classroomId || null,
             passwordHash: room.passwordHash || null,
             label: room.label || null,
             controllerMode: room.controllerMode || 'player',
@@ -102,6 +115,7 @@ export function initStore(): Store {
       );
       store = {
         sessions: new Map(Object.entries(raw.sessions || {})),
+        classrooms: new Map(Object.entries(raw.classrooms || {})),
         rooms: new Map(Object.entries(normalizedRooms)),
         roomPlayers: raw.roomPlayers || [],
         gameStates: new Map(Object.entries(raw.gameStates || {})),
@@ -116,6 +130,7 @@ export function initStore(): Store {
 
   store = {
     sessions: new Map(),
+    classrooms: new Map(),
     rooms: new Map(),
     roomPlayers: [],
     gameStates: new Map(),
@@ -133,6 +148,7 @@ export function persistStore(): void {
     }
     const serializable = {
       sessions: Object.fromEntries(store.sessions),
+      classrooms: Object.fromEntries(store.classrooms),
       rooms: Object.fromEntries(store.rooms),
       roomPlayers: store.roomPlayers,
       gameStates: Object.fromEntries(store.gameStates),

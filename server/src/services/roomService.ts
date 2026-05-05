@@ -91,7 +91,7 @@ export function createRoom(
   hostToken: string,
   password: string | undefined,
   gameConfig: GameConfig,
-  options?: { label?: string; controllerMode?: RoomControllerMode; skipSeat?: boolean }
+  options?: { label?: string; controllerMode?: RoomControllerMode; skipSeat?: boolean; classroomId?: string | null }
 ): string {
   const store = getStore();
 
@@ -107,6 +107,7 @@ export function createRoom(
 
   store.rooms.set(roomId, {
     id: roomId,
+    classroomId: options?.classroomId || null,
     passwordHash: password?.trim() ? hashPassword(password.trim()) : null,
     hostToken,
     label: options?.label?.trim() ? options.label.trim().slice(0, 48) : null,
@@ -252,6 +253,7 @@ export function getRoomState(roomId: string, sessionToken: string): RoomStateRes
 
   return {
     roomId: room.id,
+    classroomId: room.classroomId,
     label: room.label,
     players: sanitizePlayersForViewer(roomId, sessionToken, room.anonymousMode),
     gameConfig: room.gameConfig,
@@ -317,6 +319,7 @@ export function listOwnedRooms(sessionToken: string): InstructorRoomSummary[] {
 
     results.push({
       roomId: room.id,
+      classroomId: room.classroomId,
       label: room.label,
       status: room.status,
       controllerMode: room.controllerMode,

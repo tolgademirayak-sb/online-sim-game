@@ -9,6 +9,7 @@ import { ThemeProvider } from "next-themes";
 const StartPage = lazy(() => import("./pages/StartPage"));
 const Index = lazy(() => import("./pages/Index"));
 const InstructorDashboard = lazy(() => import("./pages/InstructorDashboard"));
+const ClassroomAnalysis = lazy(() => import("./pages/ClassroomAnalysis"));
 const MultiplayerLobby = lazy(() => import("./pages/MultiplayerLobby"));
 const MultiplayerRoom = lazy(() => import("./pages/MultiplayerRoom"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -29,6 +30,7 @@ const App = () => (
               <Route path="/multiplayer" element={<MultiplayerLobby />} />
               <Route path="/multiplayer/room/:roomId" element={<MultiplayerRoom />} />
               <Route path="/instructor" element={<InstructorDashboard />} />
+              <Route path="/instructor/classrooms/:classCode/analysis" element={<ClassroomAnalysis />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

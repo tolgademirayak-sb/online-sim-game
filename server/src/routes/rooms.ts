@@ -12,7 +12,7 @@ router.use(sessionAuth);
 // POST /api/rooms — create room
 router.post('/', (req, res) => {
   try {
-    const { password, gameConfig, label, controllerMode, skipSeat } = req.body;
+    const { password, gameConfig } = req.body;
 
     if (password !== undefined && typeof password !== 'string') {
       return res.status(400).json({ error: 'password must be a string' });
@@ -26,9 +26,8 @@ router.post('/', (req, res) => {
     };
 
     const roomId = roomService.createRoom(req.sessionToken!, password, config, {
-      label,
-      controllerMode,
-      skipSeat: !!skipSeat,
+      controllerMode: 'player',
+      skipSeat: false,
     });
     res.json({ roomId });
   } catch (err: any) {
